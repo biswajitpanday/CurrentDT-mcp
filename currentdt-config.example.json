@@ -1,0 +1,33 @@
+{
+  "defaultFormat": "iso",
+  "defaultProvider": "local",
+  "providers": {
+    "local": {
+      "name": "local",
+      "enabled": true,
+      "priority": 1
+    },
+    "remote": {
+      "name": "remote",
+      "enabled": true,
+      "priority": 2,
+      "config": {
+        "url": "https://worldtimeapi.org/api/timezone/UTC",
+        "timeout": 5000
+      }
+    }
+  },
+  "customFormats": {
+    "filename": "YYYY-MM-DD-HHmmss",
+    "logdate": "YYYY/MM/DD HH:mm:ss",
+    "simple": "MM/DD/YYYY",
+    "readable": "dddd, MMMM Do YYYY"
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": 1000,
+    "maxSize": 100
+  },
+  "debug": false,
+  "logLevel": "info"
+}
