@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "currentdt": {
+      "command": "npx",
+      "args": ["@strix-ai/currentdt-mcp"]
+    }
+  }
+}
+
+/* 
+Installation Instructions for Windsurf:
+
+1. Install the package globally:
+   npm install -g @strix-ai/currentdt-mcp
+
+2. Configure Windsurf MCP settings:
+   Location: Windsurf MCP configuration file
+   
+3. Add the JSON configuration above
+
+4. Restart Windsurf
+
+5. Test datetime functionality:
+   Ask: "Create a backup script with current timestamp"
+   
+Local development configuration:
+{
+  "mcpServers": {
+    "currentdt-local": {
+      "command": "node",
+      "args": ["/full/path/to/currentdt-mcp/dist/index.js"],
+      "env": {
+        "CURRENTDT_DEBUG": "true"
+      }
+    }
+  }
+}
+*/

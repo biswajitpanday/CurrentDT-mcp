@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "currentdt": {
+      "command": "currentdt-mcp",
+      "args": []
+    }
+  }
+}
+
+/* 
+Installation Instructions for Claude Desktop:
+
+1. Install the package globally:
+   npm install -g @strix-ai/currentdt-mcp
+
+2. Locate your Claude Desktop configuration file:
+   - macOS: ~/claude_desktop_config.json
+   - Windows: %APPDATA%/Claude/claude_desktop_config.json
+   - Linux: ~/.config/claude-desktop/config.json
+
+3. Create or update the file with the JSON configuration above
+
+4. Restart Claude Desktop application
+
+5. Test the integration:
+   Ask: "What's the current time in YYYY-MM-DD format?"
+   Expected: Claude automatically gets current datetime
+
+Alternative local development configuration:
+{
+  "mcpServers": {
+    "currentdt": {
+      "command": "node",
+      "args": ["/path/to/currentdt-mcp/dist/index.js"]
+    }
+  }
+}
+*/

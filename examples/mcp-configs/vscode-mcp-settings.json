@@ -1,0 +1,45 @@
+{
+  "mcp.servers": [
+    {
+      "name": "currentdt",
+      "command": "currentdt-mcp",
+      "args": []
+    }
+  ]
+}
+
+/* 
+Installation Instructions for VS Code:
+
+1. Install the MCP extension for VS Code from the marketplace
+
+2. Install the package globally:
+   npm install -g @strix-ai/currentdt-mcp
+
+3. Add configuration to VS Code settings:
+   - Open VS Code Settings (Ctrl/Cmd + ,)
+   - Search for "mcp"
+   - Add the configuration above to settings.json
+
+Alternative: Add directly to settings.json:
+- Open Command Palette (Ctrl/Cmd + Shift + P)
+- Type "Preferences: Open Settings (JSON)"
+- Add the mcp.servers configuration
+
+4. Restart VS Code
+
+5. Test with MCP-compatible AI assistant extension:
+   Ask: "Generate a filename with current timestamp"
+   
+For development/testing:
+{
+  "mcp.servers": [
+    {
+      "name": "currentdt-dev",
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "cwd": "/path/to/currentdt-mcp"
+    }
+  ]
+}
+*/

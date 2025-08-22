@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "currentdt": {
+      "command": "npx",
+      "args": ["@strix-ai/currentdt-mcp"]
+    }
+  }
+}
+
+/* 
+Installation Instructions for Cursor:
+
+1. Install the package globally:
+   npm install -g @strix-ai/currentdt-mcp
+
+2. Create or update your Cursor MCP settings file:
+   Location: ~/.cursor/mcp_servers.json
+   
+3. Copy the JSON configuration above into the file
+
+4. Restart Cursor IDE
+
+5. Test by asking Claude to create a date-stamped file:
+   "Create a SQL migration file for adding user preferences"
+   
+Expected result: Claude will automatically use current datetime without asking
+*/

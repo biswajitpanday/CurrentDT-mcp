@@ -19,7 +19,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/strix-ai/currentdt-mcp.git"
+    "url": "git+https://github.com/strix-ai/currentdt-mcp.git"
   },
   "homepage": "https://github.com/strix-ai/currentdt-mcp#readme",
   "bugs": {
@@ -32,7 +32,9 @@
   "files": [
     "dist/**/*",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "examples/mcp-configs/**/*",
+    "currentdt-config.example.json"
   ],
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -47,8 +49,13 @@
     "format": "prettier --write src/**/*.ts",
     "type-check": "tsc --noEmit",
     "prepublish": "npm run build",
-    "publish": "npm publish --access public",
-    "docs": "typedoc src/index.ts"
+    "publish:dry": "npm publish --dry-run --access public",
+    "publish:prod": "npm publish --access public",
+    "pack": "npm pack",
+    "docs": "typedoc src/index.ts",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0",

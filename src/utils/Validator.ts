@@ -5,10 +5,13 @@ import { DateFormatter } from './DateFormatter';
 export class Validator {
   static validateDateTimeOptions(options: any): { success: boolean; data?: any; errors?: string[] } {
     try {
-      const result = DateTimeOptionsSchema.safeParse(options);
+      // Handle null/undefined by providing defaults
+      const sanitizedOptions = options || {};
+      
+      const result = DateTimeOptionsSchema.safeParse(sanitizedOptions);
       if (result.success) {
         // Additional validation for format
-        if (result.data.format && !DateFormatter.validateFormat(result.data.format)) {
+        if (result.data.format && result.data.format !== 'iso' && !DateFormatter.validateFormat(result.data.format)) {
           return {
             success: false,
             errors: [`Invalid format string: ${result.data.format}`],
