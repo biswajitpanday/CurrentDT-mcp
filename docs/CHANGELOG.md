@@ -28,17 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Configuration Management**: JSON config files and environment variable support
 - **CLI Interface**: Command-line tools for testing, validation, and help
 - **MCP Tool**: `get_current_datetime` with optional format and provider parameters
-- **Format Support**: 
-  - ISO 8601 format (default)
-  - Custom formats using tokens (YYYY, MM, DD, HH, mm, ss, SSS)
-  - Predefined formats (filename, logdate, simple)
-- **Provider Support**:
-  - Local system clock (default, priority 1)
-  - Remote time services (configurable, priority 2)
-  - Automatic fallback mechanisms
+- **Format Support**: ISO 8601, custom tokens (YYYY-MM-DD), predefined formats
+- **Provider Support**: Local system clock, remote time services, automatic fallback
 - **Error Handling**: Comprehensive error handling with structured responses
-- **Logging**: Structured JSON logging with correlation IDs
-- **Validation**: Input sanitization and format validation
 - **Type Safety**: Full TypeScript implementation with Zod schemas
 
 ### Features
@@ -46,29 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ MCP client integration (Cursor, Claude Desktop, VS Code, Windsurf)
 - ✅ Configurable via JSON files and environment variables
 - ✅ Extensible provider architecture
-- ✅ Performance optimized with caching considerations
 - ✅ Security focused with input validation
 - ✅ Developer-friendly CLI with testing tools
-
-### Documentation
-- Complete API documentation
-- Integration examples for all major MCP clients
-- Configuration reference
-- Troubleshooting guide
-- Architecture documentation following SOLID principles
-
-### Technical
-- **Architecture**: Clean architecture with SOLID principles
-- **Patterns**: Factory, Strategy, Singleton patterns
-- **Testing**: Comprehensive unit and integration test suite
-- **Build**: TypeScript compilation with ESLint and Prettier
-- **Distribution**: npm package under @strix-ai organization
-
-### Examples
-- MCP client configuration files for all supported clients
-- Sample configuration files
-- Integration testing scripts
-- CLI usage examples
 
 ## [Unreleased]
 
