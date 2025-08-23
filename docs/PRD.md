@@ -3,8 +3,8 @@
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  
-**Version:** 1.0  
-**Date:** August 22, 2025
+**Version:** 1.1.0  
+**Date:** August 23, 2025
 
 ## 1. Executive Summary
 

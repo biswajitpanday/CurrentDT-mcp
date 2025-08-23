@@ -1,4 +1,4 @@
-# Technical Notes - @strix-ai/currentdt-mcp
+# Technical Notes - @strix-ai/currentdt-mcp v1.1.0
 
 ## MCP Compatibility Requirements
 
