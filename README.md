@@ -1,6 +1,8 @@
 # @strix-ai/currentdt-mcp
 
 > Real-time date and time access for AI assistants via Model Context Protocol (MCP)
+> 
+> **Built for AI, Built with AI** - Enhancing AI assistant capabilities through intelligent tooling
 
 [![npm version](https://badge.fury.io/js/@strix-ai%2Fcurrentdt-mcp.svg)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -22,22 +24,23 @@ npm install -g @strix-ai/currentdt-mcp
 
 ## User Flow
 
-```mermaid
-%%{init: {'theme':'dark', 'themeVariables': { 'primaryColor': '#bb2528', 'primaryTextColor': '#fff', 'primaryBorderColor': '#7C0000', 'lineColor': '#F8B229', 'sectionBkColor': '#1f2020', 'altSectionBkColor': '#4f4f4f', 'gridColor': '#848282', 'secondaryColor': '#006100', 'tertiaryColor': '#fff'}}}%%
-graph TD
-    A[User Asks for Timestamped Code] -->|Request| B[AI Assistant]
-    B -->|Calls Tool| C[get_current_datetime]
-    C -->|MCP Protocol| D[CurrentDT Server]
-    D -->|Fetches Time| E[Local/Remote Provider]
-    E -->|Returns DateTime| D
-    D -->|Formatted Result| C
-    C -->|Current Time| B
-    B -->|Generated Code| F[Timestamped Output]
-    
-    style A fill:#2d3748,stroke:#4a5568,color:#fff
-    style B fill:#2b6cb0,stroke:#3182ce,color:#fff  
-    style D fill:#d69e2e,stroke:#b7791f,color:#000
-    style F fill:#38a169,stroke:#2f855a,color:#fff
+```
+┌─────────────────────┐    ┌─────────────────┐    ┌─────────────────────┐
+│ User Asks for       │───▶│ AI Assistant    │───▶│ get_current_        │
+│ Timestamped Code    │    │                 │    │ datetime Tool       │
+└─────────────────────┘    └─────────────────┘    └─────────────────────┘
+                                                            │
+                                                            ▼
+┌─────────────────────┐    ┌─────────────────┐    ┌─────────────────────┐
+│ Timestamped Output  │◀───│ Current Time    │◀───│ CurrentDT MCP       │
+│ Generated           │    │ Returned        │    │ Server              │
+└─────────────────────┘    └─────────────────┘    └─────────────────────┘
+                                                            │
+                                                            ▼
+                           ┌─────────────────┐    ┌─────────────────────┐
+                           │ Formatted       │◀───│ Local/Remote        │
+                           │ DateTime        │    │ Time Provider       │
+                           └─────────────────┘    └─────────────────────┘
 ```
 
 ## Core Features
@@ -109,6 +112,17 @@ Same configuration as Cursor IDE - add to Windsurf MCP settings file.
 ### 1. SQL Migration Files
 **User:** "Create a migration to add user preferences table"  
 **Result:** Migration file named `2025-08-23-143000_add_user_preferences.sql` with current timestamp
+
+**MCP Tool Call Example:**
+```json
+{
+  "tool": "get_current_datetime",
+  "arguments": {
+    "format": "YYYY-MM-DD-HHmmss",
+    "provider": "local"
+  }
+}
+```
 
 ### 2. Timestamped Logging
 **User:** "Generate a logger that includes timestamps"  
@@ -202,7 +216,7 @@ npx @strix-ai/currentdt-mcp
 ## Development
 
 ```bash
-git clone https://github.com/strix-ai/currentdt-mcp.git
+git clone https://github.com/biswajitpanday/CurrentDT-mcp.git
 cd currentdt-mcp
 npm install
 npm run dev
@@ -232,10 +246,10 @@ Detailed documentation available in `/docs`:
 
 ## Support & Links
 
-- **Issues:** [GitHub Issues](https://github.com/strix-ai/currentdt-mcp/issues)
-- **Documentation:** [GitHub Repository](https://github.com/strix-ai/currentdt-mcp)
+- **Issues:** [GitHub Issues](https://github.com/biswajitpanday/CurrentDT-mcp/issues)
+- **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
 - **npm Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
-- **Author:** [Biswajit Panday](https://biswajitpanday.github.io)
+- **Author:** [Biswajit Panday](https://biswajitpanday.github.io) - AI-Assisted Development Enthusiast
 
 ## License
 

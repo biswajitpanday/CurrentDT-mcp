@@ -19,11 +19,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strix-ai/currentdt-mcp.git"
+    "url": "git+https://github.com/biswajitpanday/CurrentDT-mcp.git"
   },
-  "homepage": "https://github.com/strix-ai/currentdt-mcp#readme",
+  "homepage": "https://github.com/biswajitpanday/CurrentDT-mcp#readme",
   "bugs": {
-    "url": "https://github.com/strix-ai/currentdt-mcp/issues"
+    "url": "https://github.com/biswajitpanday/CurrentDT-mcp/issues"
   },
   "main": "dist/index.js",
   "bin": {

@@ -1,5 +1,7 @@
 # Product Requirements Document - @strix-ai/currentdt-mcp
 
+> **Built for AI, Built with AI** - Enabling AI assistants to understand and use real-time information
+
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  

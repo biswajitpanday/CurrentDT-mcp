@@ -1,5 +1,7 @@
 # TaskList - @strix-ai/currentdt-mcp
 
+> **Built for AI, Built with AI** - Development progress tracked and managed through AI collaboration
+
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io

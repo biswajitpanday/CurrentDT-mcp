@@ -1,4 +1,6 @@
-# Technical Notes - @strix-ai/currentdt-mcp v1.1.0
+# Technical Notes - @strix-ai/currentdt-mcp
+
+> **Built for AI, Built with AI** - Technical insights from AI-guided development process v1.1.0
 
 ## MCP Compatibility Requirements
 

@@ -36,7 +36,7 @@ ENVIRONMENT VARIABLES:
   CURRENTDT_DEBUG      Enable debug logging (true/false)
   CURRENTDT_CONFIG     Custom configuration file path
 
-For more information, visit: https://github.com/strix-ai/currentdt-mcp
+For more information, visit: https://github.com/biswajitpanday/CurrentDT-mcp
       `);
       process.exit(0);
     }

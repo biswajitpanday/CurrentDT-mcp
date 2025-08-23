@@ -6,7 +6,11 @@
 
 Picture this: you're deep in a coding session with Claude or Cursor, asking it to generate a SQL migration file. Everything's going perfectly until it names the file `2024-01-01-create_users_table.sql` — except it's August 2025. Now you're manually updating timestamps, breaking your flow, and wondering if there's a better way.
 
-This exact frustration led me to build **@strix-ai/currentdt-mcp**, my first Model Context Protocol (MCP) tool that gives AI assistants real-time access to current date and time information. What started as solving my own workflow interruption became a journey into the fascinating world of extending AI capabilities.
+This exact frustration led me to build **@strix-ai/currentdt-mcp** — **my very first Model Context Protocol (MCP) tool**. I created this to solve my own daily workflow interruption, and what started as a simple personal solution became a journey into the fascinating world of extending AI capabilities.
+
+> **Built for AI, Built with AI** — This entire project was conceived, planned, and largely implemented through AI-assisted development, showcasing how AI can help create better AI tools.
+
+![Real-Time DateTime for AI Assistants](currentdt-mcp-hero.jpg)
 
 ## The Problem: When AI Needs to Know "When"
 
@@ -97,6 +101,26 @@ For a tool that gets called frequently, performance matters. I implemented:
 - Response caching for remote providers
 - Minimal object allocation in hot paths
 
+### The Development Flow
+
+```mermaid
+flowchart LR
+    A["😤 Personal<br/>Problem"] --> B["🔍 Research<br/>MCP"]
+    B --> C["🏗️ Design<br/>Architecture"]
+    C --> D["💻 Implement<br/>Solution"]
+    D --> E["🧪 Test<br/>& Debug"]
+    E --> F["📚 Document<br/>& Polish"]
+    F --> G["🚀 Share with<br/>Community"]
+    G --> H["💬 Community<br/>Feedback"]
+    H --> A
+    
+    style A fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    style G fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    style H fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+```
+
+**Key Insight:** Building your first tool is intimidating, but starting with your own daily frustration provides immediate validation and motivation.
+
 ## The MCP Ecosystem Opportunity
 
 Building this tool opened my eyes to MCP's potential. We're at the beginning of a new ecosystem where developers can extend AI assistants with domain-specific capabilities:
@@ -111,7 +135,7 @@ Each tool makes AI assistants more powerful and contextual for specific workflow
 ## Lessons Learned
 
 ### 1. Start with Your Own Pain Point
-The best tools solve problems you personally experience. Using `@strix-ai/currentdt-mcp` in my daily workflow provided immediate feedback and guided development priorities.
+The best tools solve problems you personally experience. As my first MCP tool, using `@strix-ai/currentdt-mcp` in my daily workflow provided immediate feedback and guided development priorities. There's no better product validation than solving your own daily annoyance.
 
 ### 2. Design for Extensibility
 The provider architecture allows for custom time sources without core changes. This pattern works well for MCP tools — design for the 80% case but enable the 20% extensions.
@@ -139,13 +163,79 @@ If you're curious about MCP development or just want to eliminate datetime frict
 npm install -g @strix-ai/currentdt-mcp
 ```
 
-Then configure your MCP client (Cursor, Claude Desktop, VS Code, or Windsurf) following the [integration guides](https://github.com/strix-ai/currentdt-mcp#mcp-client-integration).
+Then configure your MCP client (Cursor, Claude Desktop, VS Code, or Windsurf) following the [integration guides](https://github.com/biswajitpanday/CurrentDT-mcp#mcp-client-integration).
 
 The next time you ask your AI assistant to generate timestamped code, it'll just work — and you'll understand why extending AI capabilities through MCP is such a powerful pattern.
 
+## User Flow: From Problem to Solution
+
+```mermaid
+graph TD
+    A["👨‍💻 Developer asks AI:<br/>'Create migration file'"] --> B["🤖 AI Assistant<br/>receives request"]
+    B --> C["🔧 AI calls<br/>get_current_datetime tool"]
+    C --> D["⚡ CurrentDT MCP Server<br/>processes request"]
+    D --> E["⏰ Time Provider<br/>fetches current time"]
+    E --> F["📝 Formatted DateTime<br/>returned to AI"]
+    F --> G["✅ AI generates<br/>timestamped migration:<br/>2025-08-23-143000_add_users.sql"]
+    G --> H["🎉 Developer continues<br/>coding without interruption"]
+    
+    style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style G fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    style H fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style D fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+```
+
+## Architecture at a Glance
+
+```mermaid
+graph TB
+    subgraph "🌐 MCP Ecosystem"
+        direction TB
+        subgraph "AI Clients"
+            A["🎯 Cursor IDE"]
+            B["💬 Claude Desktop"]
+            C["📝 VS Code"]
+            D["🌊 Windsurf"]
+        end
+        
+        subgraph "CurrentDT MCP Server"
+            E["🔧 MCP Protocol Handler"]
+            F["📋 DateTime Service"]
+            G["⚙️ Config Manager"]
+        end
+        
+        subgraph "Time Providers"
+            H["🕐 Local System Clock"]
+            I["🌍 Remote Time APIs"]
+            J["🔌 Custom Sources"]
+        end
+    end
+    
+    A -.->|JSON-RPC| E
+    B -.->|JSON-RPC| E
+    C -.->|JSON-RPC| E
+    D -.->|JSON-RPC| E
+    
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+    F --> J
+    
+    style E fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    style F fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style H fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    style I fill:#fff8e1,stroke:#f57c00,stroke-width:2px
+    style J fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+```
+
 ## Closing Thoughts
 
-Building `@strix-ai/currentdt-mcp` taught me that the most impactful tools often solve simple, universal problems elegantly. Every developer has experienced datetime friction with AI assistants, but few knew there was a systematic solution.
+Building my first MCP tool taught me that the most impactful developer tools often solve simple, universal problems elegantly. Every developer has experienced datetime friction with AI assistants, but few knew there was a systematic solution.
+
+**The Personal Journey:** What started as a weekend project to solve my own annoying workflow interruption turned into something much bigger. This was my first foray into the MCP ecosystem, and the experience of building something that directly addressed my daily pain point made every coding session feel purposeful.
+
+As someone passionate about AI-assisted development (you can see more of my work at [biswajitpanday.github.io](https://biswajitpanday.github.io)), I've always believed that the best tools emerge from personal pain points.
 
 MCP represents a fundamental shift in how we think about AI capabilities. Instead of waiting for AI providers to build every conceivable feature, we can extend AI assistants ourselves, creating personalized, powerful development environments.
 
@@ -155,6 +245,6 @@ The future of AI-assisted development isn't just smarter AI — it's AI that kno
 
 **Ready to build your own MCP tool?** Start with a problem you face daily, check out the [MCP specification](https://github.com/modelcontextprotocol/specification), and join the growing community of developers extending AI capabilities.
 
-**@strix-ai/currentdt-mcp** is open source and available on [GitHub](https://github.com/strix-ai/currentdt-mcp) and [npm](https://www.npmjs.com/package/@strix-ai/currentdt-mcp). Contributions, feedback, and use cases are always welcome.
+**@strix-ai/currentdt-mcp** is open source and available on [GitHub](https://github.com/biswajitpanday/CurrentDT-mcp) and [npm](https://www.npmjs.com/package/@strix-ai/currentdt-mcp). Contributions, feedback, and use cases are always welcome.
 
 *Follow me at [biswajitpanday.github.io](https://biswajitpanday.github.io) for more insights on AI-assisted development and developer tooling.*

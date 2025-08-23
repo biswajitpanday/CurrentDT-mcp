@@ -1,4 +1,11 @@
+---
+config:
+  theme: neo-dark
+---
+
 # Architecture Document - @strix-ai/currentdt-mcp
+
+> **Built for AI, Built with AI** - This project demonstrates AI-assisted development creating enhanced AI capabilities
 
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
@@ -29,7 +36,7 @@
 ## 2. High-Level Architecture
 
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 graph TB
     subgraph "MCP Clients"
         A[Cursor IDE]
@@ -79,7 +86,7 @@ graph TB
 ### 3.1 Core Components
 
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 classDiagram
     class MCPServer {
         +start(): void
@@ -139,7 +146,7 @@ classDiagram
 ### 3.2 Data Flow Architecture
 
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 sequenceDiagram
     participant C as MCP Client
     participant S as MCP Server
@@ -277,7 +284,7 @@ class ProviderFactory {
 
 ### 6.1 Error Hierarchy
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 classDiagram
     class MCPError {
         +code: number
@@ -309,7 +316,7 @@ classDiagram
 
 ### 6.2 Error Handling Flow
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 flowchart TD
     A[Request Received] --> B{Validate Input}
     B -->|Invalid| C[Return Validation Error]
@@ -369,7 +376,7 @@ flowchart TD
 
 ### 9.1 Testing Strategy
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 pyramid
     title Testing Pyramid
     Unit_Tests : "70% - Individual components"
@@ -398,7 +405,7 @@ pyramid
 
 ### 10.1 Package Distribution
 ```mermaid
-%%{init: {'theme':'dark'}}%%
+%%{init: {'theme':'neo-dark'}}%%
 flowchart LR
     A[Source Code] --> B[TypeScript Compilation]
     B --> C[Bundle Creation]

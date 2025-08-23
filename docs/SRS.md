@@ -1,5 +1,7 @@
 # Software Requirements Specification - @strix-ai/currentdt-mcp
 
+> **Built for AI, Built with AI** - Systematically designed through AI collaboration to enhance AI capabilities
+
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  
