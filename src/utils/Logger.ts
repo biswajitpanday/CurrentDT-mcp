@@ -55,13 +55,9 @@ export class Logger {
   private output(logEntry: LogEntry): void {
     const output = JSON.stringify(logEntry);
     
-    if (logEntry.level === 'error' || logEntry.level === 'fatal') {
-      console.error(output);
-    } else if (logEntry.level === 'warn') {
-      console.warn(output);
-    } else {
-      console.log(output);
-    }
+    // Always use stderr for MCP server compatibility
+    // stdout is reserved for JSON-RPC communication only
+    process.stderr.write(output + '\n');
   }
 
   debug(message: string, context?: Record<string, any>): void {

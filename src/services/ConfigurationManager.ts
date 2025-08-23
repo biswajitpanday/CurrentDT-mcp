@@ -68,7 +68,7 @@ export class ConfigurationManager implements IConfigurationManager {
         const configData = JSON.parse(configContent);
         
         this.config = this.validateAndMergeConfig(configData);
-        this.logger.info('Configuration loaded successfully', { 
+        this.logger.debug('Configuration loaded successfully', { 
           path: this.configPath,
           defaultFormat: this.config.defaultFormat,
           defaultProvider: this.config.defaultProvider
@@ -81,7 +81,7 @@ export class ConfigurationManager implements IConfigurationManager {
         );
       }
     } else {
-      this.logger.info('No configuration file found, using defaults');
+      this.logger.debug('No configuration file found, using defaults');
     }
 
     // Apply environment variable overrides

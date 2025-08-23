@@ -10,7 +10,8 @@
       "Bash(currentdt-mcp:*)",
       "Bash(npm run type-check:*)",
       "Bash(npm run publish:dry:*)",
-      "Bash(npm pkg fix:*)"
+      "Bash(npm pkg fix:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

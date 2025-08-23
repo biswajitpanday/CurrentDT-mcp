@@ -21,6 +21,11 @@ export class MCPServer {
 
   constructor() {
     this.logger = Logger.getInstance();
+    
+    // Set quiet mode for MCP server (only errors to stderr)
+    // This prevents logs from interfering with JSON-RPC on stdout
+    this.logger.setLogLevel('error');
+    
     this.configManager = ConfigurationManager.getInstance();
     this.toolRegistry = new ToolRegistry();
     

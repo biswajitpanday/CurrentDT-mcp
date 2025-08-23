@@ -5,6 +5,20 @@ All notable changes to @strix-ai/currentdt-mcp will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-08-23
+
+### Fixed
+- **Critical MCP Fix**: Redirect all logs to stderr to prevent stdout pollution
+- **JSON-RPC Compatibility**: Ensure only valid JSON-RPC messages on stdout
+- **Client Validation**: Fix Zod validation errors in MCP clients
+- **Logging Level**: Set default log level to 'error' for MCP server mode
+
+### Technical Details
+- Logger now uses `process.stderr.write()` instead of `console.log()`
+- MCP server constructor sets quiet mode (error-level logging only)
+- Configuration manager uses debug-level logging to prevent noise
+- Maintains full functionality while fixing client compatibility
+
 ## [1.0.0] - 2025-08-22
 
 ### Added
