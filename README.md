@@ -1,3 +1,5 @@
+[![MSeeP.ai Security Assessment Badge](https://mseep.net/pr/biswajitpanday-currentdt-mcp-badge.png)](https://mseep.ai/app/biswajitpanday-currentdt-mcp)
+
 # @strix-ai/currentdt-mcp
 
 > Real-time date and time access for AI assistants via Model Context Protocol (MCP)
