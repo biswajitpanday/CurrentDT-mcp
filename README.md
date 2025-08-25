@@ -9,6 +9,7 @@
 [![npm version](https://badge.fury.io/js/@strix-ai%2Fcurrentdt-mcp.svg)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+[![Verified on MSeeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/e500e8da-135c-4995-bd94-9992706efc17)
 
 ## Overview
 
