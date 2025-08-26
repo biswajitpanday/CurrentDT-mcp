@@ -1,0 +1,129 @@
+name: 🚀 Publish to NPM
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'examples/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+jobs:
+  publish:
+    name: 📦 Build & Publish to NPM
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+      
+      - name: 📥 Install Dependencies
+        run: npm ci
+      
+      - name: 🏗️ Build Project
+        run: npm run build
+      
+      - name: 🧪 Run Tests
+        run: |
+          npm run lint
+          npm run type-check
+          npm test
+      
+      - name: 🔍 Check if version changed
+        id: version-check
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # Check if this version exists on npm
+          if npm view @strix-ai/currentdt-mcp@$CURRENT_VERSION version 2>/dev/null; then
+            echo "Version $CURRENT_VERSION already exists on npm"
+            echo "publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version $CURRENT_VERSION detected"
+            echo "publish=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 🚀 Publish to NPM
+        if: steps.version-check.outputs.publish == 'true'
+        run: |
+          echo "Publishing version ${{ steps.version-check.outputs.version }} to NPM..."
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: 🏷️ Create Git Tag
+        if: steps.version-check.outputs.publish == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v${{ steps.version-check.outputs.version }}" -m "Release v${{ steps.version-check.outputs.version }}"
+          git push origin "v${{ steps.version-check.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 📢 Create GitHub Release
+        if: steps.version-check.outputs.publish == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version-check.outputs.version }}
+          release_name: 🚀 Release v${{ steps.version-check.outputs.version }}
+          body: |
+            ## 🎉 @strix-ai/currentdt-mcp v${{ steps.version-check.outputs.version }}
+            
+            **Built for AI, Built with AI** - Enhanced datetime capabilities for AI assistants
+            
+            ### 🔗 Quick Install
+            ```bash
+            npm install -g @strix-ai/currentdt-mcp
+            ```
+            
+            ### 🎯 MCP Client Integration
+            - ✅ **Cursor IDE** - Full compatibility
+            - ✅ **Claude Desktop** - Full compatibility  
+            - ✅ **VS Code** - Full compatibility
+            - ✅ **Windsurf** - Full compatibility
+            
+            ### 📋 Changes
+            - See commit history for detailed changes
+            - Universal MCP protocol compliance
+            - Enhanced datetime formatting options
+            - Improved error handling and logging
+            
+            ### 👥 Contributors
+            - **Author:** [Biswajit Panday](https://biswajitpanday.github.io)
+            - **Contributor:** Abdullah Saleh Robin
+            
+            ---
+            
+            **Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)  
+            **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
+          draft: false
+          prerelease: false
+      
+      - name: ✅ Success Notification
+        if: steps.version-check.outputs.publish == 'true'
+        run: |
+          echo "🎉 Successfully published @strix-ai/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM!"
+          echo "📦 NPM: https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
+          echo "🏷️ Release: https://github.com/biswajitpanday/CurrentDT-mcp/releases/tag/v${{ steps.version-check.outputs.version }}"
+      
+      - name: 📝 No Publish Notification  
+        if: steps.version-check.outputs.publish == 'false'
+        run: |
+          echo "ℹ️ No new version to publish - version already exists on NPM"
