@@ -152,7 +152,7 @@ Same configuration as Cursor IDE - add to Windsurf MCP settings file.
 
 ### 3. Dated Documentation
 **User:** "Update the changelog with today's date"  
-**Result:** Changelog entry with current date: `## [1.1.6] - 2025-08-26`
+**Result:** Changelog entry with current date: `## [1.1.7] - 2025-08-26`
 
 ## API Reference
 

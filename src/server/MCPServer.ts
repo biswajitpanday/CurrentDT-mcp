@@ -40,7 +40,7 @@ export class MCPServer {
     this.server = new Server(
       {
         name: '@strix-ai/currentdt-mcp',
-        version: '1.1.6',
+        version: '1.1.7',
       },
       {
         capabilities: {
@@ -107,7 +107,7 @@ export class MCPServer {
 
       this.logger.info('MCP server started successfully', {
         name: '@strix-ai/currentdt-mcp',
-        version: '1.1.6',
+        version: '1.1.7',
         capabilities: ['tools', 'prompts'],
         toolCount: this.toolRegistry.getAll().length
       });

@@ -6,7 +6,7 @@
 **Email:** biswajitmailid@gmail.com  
 **Website:** [biswajitpanday.github.io](https://biswajitpanday.github.io)  
 **Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>  
-**Version:** 1.1.6  
+**Version:** 1.1.7  
 **Date:** August 26, 2025
 
 ## MCP Compatibility Requirements
@@ -108,7 +108,7 @@
 
 ## Future Enhancements Roadmap
 
-### Short-term (v1.1.6)
+### Short-term (v1.1.7)
 - Enhanced caching for performance
 - Additional timezone support
 - More predefined formats
