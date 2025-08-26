@@ -1,4 +1,4 @@
-# TaskList - @biswajitpanday/currentdt-mcp
+# TaskList - @strix-ai/currentdt-mcp
 
 > **Built for AI, Built with AI** - Development progress tracked and managed through AI collaboration
 

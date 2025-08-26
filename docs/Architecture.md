@@ -3,7 +3,7 @@ config:
   theme: neo-dark
 ---
 
-# Architecture Document - @biswajitpanday/currentdt-mcp
+# Architecture Document - @strix-ai/currentdt-mcp
 
 > **Built for AI, Built with AI** - This project demonstrates AI-assisted development creating enhanced AI capabilities
 
@@ -17,7 +17,7 @@ config:
 ## 1. Architecture Overview
 
 ### 1.1 System Purpose
-@biswajitpanday/currentdt-mcp is designed as a lightweight, extensible MCP server that provides current datetime functionality to AI assistants while maintaining clean architecture principles and supporting multiple configuration options.
+@strix-ai/currentdt-mcp is designed as a lightweight, extensible MCP server that provides current datetime functionality to AI assistants while maintaining clean architecture principles and supporting multiple configuration options.
 
 ### 1.2 Design Principles
 
@@ -45,7 +45,7 @@ graph TB
         C[VS Code]
     end
 
-    subgraph "MCP Server (@biswajitpanday/currentdt-mcp)"
+    subgraph "MCP Server (@strix-ai/currentdt-mcp)"
         D[MCP Protocol Handler]
         E[Tool Registry]
         F[Datetime Service]
@@ -471,4 +471,4 @@ interface IDateTimePlugin {
 - **Configuration Validation:** Startup and runtime validation
 - **Resource Usage:** Memory and CPU monitoring
 
-This architecture document provides a comprehensive foundation for implementing the @biswajitpanday/currentdt-mcp project while maintaining clean, extensible, and maintainable code that follows established software engineering principles.
+This architecture document provides a comprehensive foundation for implementing the @strix-ai/currentdt-mcp project while maintaining clean, extensible, and maintainable code that follows established software engineering principles.
