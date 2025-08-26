@@ -3,6 +3,8 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { 
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { DateTimeService } from '../services/DateTimeService';
@@ -38,11 +40,12 @@ export class MCPServer {
     this.server = new Server(
       {
         name: '@strix-ai/currentdt-mcp',
-        version: '1.0.0',
+        version: '1.1.1',
       },
       {
         capabilities: {
           tools: {},
+          prompts: {},
         },
       }
     );
@@ -61,6 +64,16 @@ export class MCPServer {
     // Handle tool calls
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return await this.requestHandler.handleToolCall(request);
+    });
+
+    // Handle prompts listing (required for Cursor compatibility)
+    this.server.setRequestHandler(ListPromptsRequestSchema, async () => {
+      return await this.requestHandler.handleListPrompts();
+    });
+
+    // Handle prompt requests (required for Cursor compatibility)
+    this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+      return await this.requestHandler.handleGetPrompt(request);
     });
 
     this.logger.debug('MCP server handlers configured');
@@ -94,8 +107,8 @@ export class MCPServer {
 
       this.logger.info('MCP server started successfully', {
         name: '@strix-ai/currentdt-mcp',
-        version: '1.0.0',
-        capabilities: ['tools'],
+        version: '1.1.1',
+        capabilities: ['tools', 'prompts'],
         toolCount: this.toolRegistry.getAll().length
       });
 

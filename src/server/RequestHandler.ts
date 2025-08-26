@@ -1,4 +1,11 @@
-import { CallToolRequest, CallToolResult, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { 
+  CallToolRequest, 
+  CallToolResult, 
+  GetPromptRequest, 
+  GetPromptResult,
+  ErrorCode, 
+  McpError 
+} from '@modelcontextprotocol/sdk/types.js';
 import { DateTimeService } from '../services/DateTimeService';
 import { ToolRegistry } from './ToolRegistry';
 import { Logger } from '../utils/Logger';
@@ -115,5 +122,22 @@ export class RequestHandler {
     });
 
     return { tools };
+  }
+
+  async handleListPrompts(): Promise<{ prompts: any[] }> {
+    // Return empty prompts array for Cursor compatibility
+    // This MCP server focuses on tools, not prompts
+    this.logger.debug('Prompts listed (empty for Cursor compatibility)');
+    
+    return { prompts: [] };
+  }
+
+  async handleGetPrompt(request: GetPromptRequest): Promise<GetPromptResult> {
+    // Since we don't have prompts, this should never be called
+    // But we need it for protocol compliance
+    throw new McpError(
+      ErrorCode.MethodNotFound,
+      `Prompt '${request.params.name}' not found - this MCP server provides tools, not prompts`
+    );
   }
 }
