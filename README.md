@@ -11,6 +11,23 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![Verified on MSeeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/e500e8da-135c-4995-bd94-9992706efc17)
 
+## 📑 Table of Contents
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [User Flow](#user-flow)
+- [Core Features](#core-features)
+- [MCP Client Integration](#mcp-client-integration)
+- [Real-World Usage Examples](#real-world-usage-examples)
+- [API Reference](#api-reference)
+- [Configuration](#configuration-optional)
+- [Common Format Patterns](#common-format-patterns)
+- [Troubleshooting](#troubleshooting)
+- [Development](#development)
+- [Documentation](#documentation)
+- [Support & Links](#support--links)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Overview
 
 @strix-ai/currentdt-mcp is an MCP server that provides AI assistants with instant access to current date and time information. Essential for generating timestamped code, migration files, and dated documentation.
