@@ -6,7 +6,7 @@
 **Email:** biswajitmailid@gmail.com  
 **Website:** [biswajitpanday.github.io](https://biswajitpanday.github.io)  
 **Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>  
-**Version:** 1.1.1  
+**Version:** 1.1.6  
 **Date:** August 26, 2025
 
 ## Phase 1: Project Setup and Foundation
@@ -79,7 +79,7 @@
 - **Phase 3:** ✅ Completed
 - **Phase 4:** ✅ Completed
 - **Phase 5:** ✅ Completed
-- **Phase 6:** ✅ Completed (v1.1.1 published)
+- **Phase 6:** ✅ Completed (v1.1.6 published)
 - **Phase 7:** ✅ Completed
 
 ## Refactoring Opportunities (Future Improvements)

@@ -148,7 +148,7 @@ The MCP community is incredibly helpful. Sharing early versions and getting feed
 
 ## Looking Forward
 
-Version 1.1.1 represents a stable foundation, but the roadmap is exciting:
+Version 1.1.6 represents a stable foundation, but the roadmap is exciting:
 
 - **Enhanced Provider System**: Plugin architecture for loading custom providers from npm packages
 - **Timezone Management**: Comprehensive timezone support for global teams
