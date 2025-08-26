@@ -1,4 +1,4 @@
-# Technical Notes - @strix-ai/currentdt-mcp
+# Technical Notes - @biswajitpanday/currentdt-mcp
 
 > **Built for AI, Built with AI** - Technical insights from AI-guided development process
 

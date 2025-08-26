@@ -6,7 +6,7 @@
 
 Picture this: you're deep in a coding session with Claude or Cursor, asking it to generate a SQL migration file. Everything's going perfectly until it names the file `2024-01-01-create_users_table.sql` — except it's August 2025. Now you're manually updating timestamps, breaking your flow, and wondering if there's a better way.
 
-This exact frustration led me to build **@strix-ai/currentdt-mcp** — **my very first Model Context Protocol (MCP) tool**. I created this to solve my own daily workflow interruption, and what started as a simple personal solution became a journey into the fascinating world of extending AI capabilities.
+This exact frustration led me to build **@biswajitpanday/currentdt-mcp** — **my very first Model Context Protocol (MCP) tool**. I created this to solve my own daily workflow interruption, and what started as a simple personal solution became a journey into the fascinating world of extending AI capabilities.
 
 > **Built for AI, Built with AI** — This entire project was conceived, planned, and largely implemented through AI-assisted development, showcasing how AI can help create better AI tools.
 
@@ -37,7 +37,7 @@ The beautiful part? Once configured, it's completely invisible to the user. You 
 
 ### Technical Architecture
 
-I designed `@strix-ai/currentdt-mcp` with clean architecture principles:
+I designed `@biswajitpanday/currentdt-mcp` with clean architecture principles:
 
 ```
 AI Client (Cursor/Claude) → MCP Protocol → DateTime Server → Time Providers → System Clock/Remote APIs
@@ -53,7 +53,7 @@ The core components:
 ### Key Design Decisions
 
 **1. Zero Configuration Default**
-The tool works immediately after `npm install -g @strix-ai/currentdt-mcp` — no setup required. But it's fully configurable for power users.
+The tool works immediately after `npm install -g @biswajitpanday/currentdt-mcp` — no setup required. But it's fully configurable for power users.
 
 **2. Multiple Format Support**
 Beyond ISO 8601, it supports custom formats using familiar tokens:
@@ -135,7 +135,7 @@ Each tool makes AI assistants more powerful and contextual for specific workflow
 ## Lessons Learned
 
 ### 1. Start with Your Own Pain Point
-The best tools solve problems you personally experience. As my first MCP tool, using `@strix-ai/currentdt-mcp` in my daily workflow provided immediate feedback and guided development priorities. There's no better product validation than solving your own daily annoyance.
+The best tools solve problems you personally experience. As my first MCP tool, using `@biswajitpanday/currentdt-mcp` in my daily workflow provided immediate feedback and guided development priorities. There's no better product validation than solving your own daily annoyance.
 
 ### 2. Design for Extensibility
 The provider architecture allows for custom time sources without core changes. This pattern works well for MCP tools — design for the 80% case but enable the 20% extensions.
@@ -160,7 +160,7 @@ Version 1.1.1 represents a stable foundation, but the roadmap is exciting:
 If you're curious about MCP development or just want to eliminate datetime friction in your AI workflow:
 
 ```bash
-npm install -g @strix-ai/currentdt-mcp
+npm install -g @biswajitpanday/currentdt-mcp
 ```
 
 Then configure your MCP client (Cursor, Claude Desktop, VS Code, or Windsurf) following the [integration guides](https://github.com/biswajitpanday/CurrentDT-mcp#mcp-client-integration).
@@ -245,13 +245,13 @@ The future of AI-assisted development isn't just smarter AI — it's AI that kno
 
 **Ready to build your own MCP tool?** Start with a problem you face daily, check out the [MCP specification](https://github.com/modelcontextprotocol/specification), and join the growing community of developers extending AI capabilities.
 
-**@strix-ai/currentdt-mcp** is open source and available on [GitHub](https://github.com/biswajitpanday/CurrentDT-mcp) and [npm](https://www.npmjs.com/package/@strix-ai/currentdt-mcp). Contributions, feedback, and use cases are always welcome.
+**@biswajitpanday/currentdt-mcp** is open source and available on [GitHub](https://github.com/biswajitpanday/CurrentDT-mcp) and [npm](https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp). Contributions, feedback, and use cases are always welcome.
 
 ---
 
 **Author:** [Biswajit Panday](https://biswajitpanday.github.io) - AI-Assisted Development Enthusiast  
 **Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>
 
-*Follow the journey at [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)*
+*Follow the journey at [@biswajitpanday/currentdt-mcp](https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp)*
 
 *Follow me at [biswajitpanday.github.io](https://biswajitpanday.github.io) for more insights on AI-assisted development and developer tooling.*

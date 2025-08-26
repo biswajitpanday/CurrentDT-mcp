@@ -1,12 +1,12 @@
 [![MSeeP.ai Security Assessment Badge](https://mseep.net/pr/biswajitpanday-currentdt-mcp-badge.png)](https://mseep.ai/app/biswajitpanday-currentdt-mcp)
 
-# @strix-ai/currentdt-mcp
+# @biswajitpanday/currentdt-mcp
 
 > Real-time date and time access for AI assistants via Model Context Protocol (MCP)
 > 
 > **Built for AI, Built with AI** - Enhancing AI assistant capabilities through intelligent tooling
 
-[![npm version](https://badge.fury.io/js/@strix-ai%2Fcurrentdt-mcp.svg)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
+[![npm version](https://badge.fury.io/js/@strix-ai%2Fcurrentdt-mcp.svg)](https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![Verified on MSeeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/e500e8da-135c-4995-bd94-9992706efc17)
@@ -30,13 +30,13 @@
 
 ## Overview
 
-@strix-ai/currentdt-mcp is an MCP server that provides AI assistants with instant access to current date and time information. Essential for generating timestamped code, migration files, and dated documentation.
+@biswajitpanday/currentdt-mcp is an MCP server that provides AI assistants with instant access to current date and time information. Essential for generating timestamped code, migration files, and dated documentation.
 
 ## Quick Start
 
 ```bash
 # Install globally
-npm install -g @strix-ai/currentdt-mcp
+npm install -g @biswajitpanday/currentdt-mcp
 
 # Configure your MCP client (see integration guides below)
 # Start using current datetime in AI conversations!
@@ -76,7 +76,7 @@ npm install -g @strix-ai/currentdt-mcp
 ### Cursor IDE
 
 ```bash
-npm install -g @strix-ai/currentdt-mcp
+npm install -g @biswajitpanday/currentdt-mcp
 ```
 
 Add to `~/.cursor/mcp_servers.json`:
@@ -85,7 +85,7 @@ Add to `~/.cursor/mcp_servers.json`:
   "mcpServers": {
     "currentdt": {
       "command": "npx",
-      "args": ["@strix-ai/currentdt-mcp"]
+      "args": ["@biswajitpanday/currentdt-mcp"]
     }
   }
 }
@@ -94,7 +94,7 @@ Add to `~/.cursor/mcp_servers.json`:
 ### Claude Desktop
 
 ```bash
-npm install -g @strix-ai/currentdt-mcp
+npm install -g @biswajitpanday/currentdt-mcp
 ```
 
 Add to `~/claude_desktop_config.json`:
@@ -221,16 +221,16 @@ Create `currentdt-config.json` for custom settings:
 ### Tool Not Available
 ```bash
 # Verify installation
-npm list -g @strix-ai/currentdt-mcp
+npm list -g @biswajitpanday/currentdt-mcp
 
 # Test server directly
-npx @strix-ai/currentdt-mcp --test
+npx @biswajitpanday/currentdt-mcp --test
 ```
 
 ### Debug Mode
 ```bash
 export CURRENTDT_DEBUG=true
-npx @strix-ai/currentdt-mcp
+npx @biswajitpanday/currentdt-mcp
 ```
 
 ## Development
@@ -268,7 +268,7 @@ Detailed documentation available in `/docs`:
 
 - **Issues:** [GitHub Issues](https://github.com/biswajitpanday/CurrentDT-mcp/issues)
 - **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
-- **npm Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
+- **npm Package:** [@biswajitpanday/currentdt-mcp](https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp)
 - **Author:** [Biswajit Panday](https://biswajitpanday.github.io) - AI-Assisted Development Enthusiast
 - **Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>
 

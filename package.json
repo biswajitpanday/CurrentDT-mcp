@@ -1,5 +1,5 @@
 {
-  "name": "@strix-ai/currentdt-mcp",
+  "name": "@biswajitpanday/currentdt-mcp",
   "version": "1.1.2",
   "description": "Current DateTime MCP Server - Provide real-time date and time to AI assistants via Model Context Protocol",
   "author": {

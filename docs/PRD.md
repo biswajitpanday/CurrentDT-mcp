@@ -1,4 +1,4 @@
-# Product Requirements Document - @strix-ai/currentdt-mcp
+# Product Requirements Document - @biswajitpanday/currentdt-mcp
 
 > **Built for AI, Built with AI** - Enabling AI assistants to understand and use real-time information
 
@@ -15,7 +15,7 @@
 Developers using AI assistants frequently need current date and time information for code generation, file naming, logging, and timestamp creation. Currently, they must manually provide datetime context or accept potentially outdated information, leading to workflow interruptions and potential errors.
 
 ### 1.2 Solution Overview
-@strix-ai/currentdt-mcp is an MCP (Model Context Protocol) server that provides AI assistants with real-time access to current date and time information, enabling seamless datetime integration in development workflows.
+@biswajitpanday/currentdt-mcp is an MCP (Model Context Protocol) server that provides AI assistants with real-time access to current date and time information, enabling seamless datetime integration in development workflows.
 
 ### 1.3 Business Value
 - **Productivity Gain:** Eliminates manual datetime input interruptions
@@ -214,7 +214,7 @@ Alice is working on a database migration project. She opens Cursor and starts a 
 **Result:** 3 interruptions, 2 minutes lost, potential for errors
 
 ### 6.2 Future State (After)
-Alice is working on a database migration project with @strix-ai/currentdt-mcp installed:
+Alice is working on a database migration project with @biswajitpanday/currentdt-mcp installed:
 
 **Alice:** "Create a new SQL migration file for adding user preferences table"
 

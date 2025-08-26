@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-@strix-ai/currentdt-mcp is an MCP (Model Context Protocol) server that provides AI assistants with real-time access to current date and time information. The project is implemented in TypeScript and distributed as an npm package under the @strix-ai organization.
+@biswajitpanday/currentdt-mcp is an MCP (Model Context Protocol) server that provides AI assistants with real-time access to current date and time information. The project is implemented in TypeScript and distributed as an npm package under the @strix-ai organization.
 
 ## Development Commands
 

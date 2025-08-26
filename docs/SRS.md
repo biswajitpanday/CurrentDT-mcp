@@ -1,4 +1,4 @@
-# Software Requirements Specification - @strix-ai/currentdt-mcp
+# Software Requirements Specification - @biswajitpanday/currentdt-mcp
 
 > **Built for AI, Built with AI** - Systematically designed through AI collaboration to enhance AI capabilities
 
@@ -12,7 +12,7 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This document specifies the software requirements for @strix-ai/currentdt-mcp, an MCP (Model Context Protocol) server that provides current date and time functionality to AI assistants and development environments.
+This document specifies the software requirements for @biswajitpanday/currentdt-mcp, an MCP (Model Context Protocol) server that provides current date and time functionality to AI assistants and development environments.
 
 ### 1.2 Scope
 The system provides a standardized way for AI assistants to access current datetime information through the MCP protocol, supporting various date formats and providers.
