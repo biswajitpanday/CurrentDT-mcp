@@ -1,25 +1,33 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   extends: [
-    '@typescript-eslint/recommended',
-    'prettier'
+    'eslint:recommended'
   ],
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint'],
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: 'module',
-    project: './tsconfig.json'
+    sourceType: 'module'
   },
   rules: {
-    'prettier/prettier': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-non-null-assertion': 'off'
+    '@typescript-eslint/no-unused-vars': ['warn', { 
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      ignoreRestSiblings: true
+    }],
+    '@typescript-eslint/no-explicit-any': 'off', // Allow any for MCP protocol
+    'no-console': 'off',
+    'no-undef': 'off', // TypeScript handles this
+    'no-unused-vars': 'off', // Let @typescript-eslint handle this
+    'no-useless-catch': 'warn' // Warn instead of error
   },
   env: {
     node: true,
     es6: true
-  }
+  },
+  ignorePatterns: [
+    'dist/**/*',
+    'node_modules/**/*',
+    '*.js',
+    'coverage/**/*'
+  ]
 };

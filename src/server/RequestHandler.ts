@@ -90,27 +90,22 @@ export class RequestHandler {
   }
 
   private async handleGetCurrentDateTime(args: any): Promise<CallToolResult> {
-    try {
-      const datetime = await this.dateTimeService.getCurrentDateTime(args);
+    const datetime = await this.dateTimeService.getCurrentDateTime(args);
 
-      this.logger.debug('DateTime retrieved successfully', { 
-        datetime,
-        format: args?.format,
-        provider: args?.provider 
-      });
+    this.logger.debug('DateTime retrieved successfully', { 
+      datetime,
+      format: args?.format,
+      provider: args?.provider 
+    });
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: datetime
-          }
-        ]
-      };
-    } catch (error) {
-      // Let the parent handler deal with error transformation
-      throw error;
-    }
+    return {
+      content: [
+        {
+          type: 'text',
+          text: datetime
+        }
+      ]
+    };
   }
 
   async handleListTools(): Promise<{ tools: any[] }> {

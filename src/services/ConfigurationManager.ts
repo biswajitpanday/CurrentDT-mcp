@@ -195,7 +195,7 @@ export class ConfigurationManager implements IConfigurationManager {
     // Simple polling-based watching (could be enhanced with fs.watch)
     setInterval(async () => {
       try {
-        const stats = await fs.stat(this.configPath!);
+        await fs.stat(this.configPath!); // Check if file exists
         // This is a simplified implementation
         // In a real implementation, we'd check modification time
         // and reload only if the file has changed
