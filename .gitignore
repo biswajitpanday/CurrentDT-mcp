@@ -108,3 +108,5 @@ Thumbs.db
 # Configuration files
 currentdt-config.json
 config.json
+
+.github/workflows/*.yml
