@@ -4,7 +4,9 @@
 
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
-**Website:** biswajitpanday.github.io
+**Website:** [biswajitpanday.github.io](https://biswajitpanday.github.io)  
+**Version:** 1.1.1  
+**Date:** August 26, 2025
 
 ## Phase 1: Project Setup and Foundation
 - [x] Initialize npm package with @strix-ai scope

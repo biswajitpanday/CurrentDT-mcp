@@ -1,6 +1,12 @@
 # Technical Notes - @strix-ai/currentdt-mcp
 
-> **Built for AI, Built with AI** - Technical insights from AI-guided development process v1.1.1
+> **Built for AI, Built with AI** - Technical insights from AI-guided development process
+
+**Author:** Biswajit Panday  
+**Email:** biswajitmailid@gmail.com  
+**Website:** [biswajitpanday.github.io](https://biswajitpanday.github.io)  
+**Version:** 1.1.1  
+**Date:** August 26, 2025
 
 ## MCP Compatibility Requirements
 

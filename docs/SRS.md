@@ -4,9 +4,9 @@
 
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
-**Website:** biswajitpanday.github.io  
+**Website:** [biswajitpanday.github.io](https://biswajitpanday.github.io)  
 **Version:** 1.1.1  
-**Date:** August 23, 2025
+**Date:** August 26, 2025
 
 ## 1. Introduction
 
