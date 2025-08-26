@@ -7,6 +7,12 @@
     "email": "biswajitmailid@gmail.com",
     "url": "https://biswajitpanday.github.io"
   },
+  "contributors": [
+    {
+      "name": "Abdullah Saleh Robin",
+      "email": "robinabdullah@yahoo.com"
+    }
+  ],
   "license": "MIT",
   "keywords": [
     "mcp",

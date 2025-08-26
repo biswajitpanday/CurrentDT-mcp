@@ -247,4 +247,11 @@ The future of AI-assisted development isn't just smarter AI — it's AI that kno
 
 **@strix-ai/currentdt-mcp** is open source and available on [GitHub](https://github.com/biswajitpanday/CurrentDT-mcp) and [npm](https://www.npmjs.com/package/@strix-ai/currentdt-mcp). Contributions, feedback, and use cases are always welcome.
 
+---
+
+**Author:** [Biswajit Panday](https://biswajitpanday.github.io) - AI-Assisted Development Enthusiast  
+**Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>
+
+*Follow the journey at [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)*
+
 *Follow me at [biswajitpanday.github.io](https://biswajitpanday.github.io) for more insights on AI-assisted development and developer tooling.*

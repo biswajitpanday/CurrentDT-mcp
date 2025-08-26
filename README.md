@@ -270,6 +270,7 @@ Detailed documentation available in `/docs`:
 - **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
 - **npm Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
 - **Author:** [Biswajit Panday](https://biswajitpanday.github.io) - AI-Assisted Development Enthusiast
+- **Contributor:** Abdullah Saleh Robin <robinabdullah@yahoo.com>
 
 ## License
 
