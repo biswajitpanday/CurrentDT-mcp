@@ -81,7 +81,7 @@ export class DateFormatter {
   }
 
   static getFormatExample(format: string): string {
-    const exampleDate = new Date('2025-08-22T14:30:00.123Z');
+    const exampleDate = new Date('2025-08-26T14:30:00.123Z');
     try {
       return this.format(exampleDate, format);
     } catch {

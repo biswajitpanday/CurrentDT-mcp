@@ -115,7 +115,7 @@ describe('Validator', () => {
   describe('isValidDate', () => {
     it('should validate valid dates', () => {
       expect(Validator.isValidDate(new Date())).toBe(true);
-      expect(Validator.isValidDate(new Date('2025-08-22'))).toBe(true);
+      expect(Validator.isValidDate(new Date('2025-08-26'))).toBe(true);
     });
 
     it('should reject invalid dates', () => {
@@ -127,8 +127,8 @@ describe('Validator', () => {
 
   describe('isValidDateString', () => {
     it('should validate valid date strings', () => {
-      expect(Validator.isValidDateString('2025-08-22')).toBe(true);
-      expect(Validator.isValidDateString('2025-08-22T14:30:00Z')).toBe(true);
+      expect(Validator.isValidDateString('2025-08-26')).toBe(true);
+      expect(Validator.isValidDateString('2025-08-26T14:30:00Z')).toBe(true);
     });
 
     it('should reject invalid date strings', () => {

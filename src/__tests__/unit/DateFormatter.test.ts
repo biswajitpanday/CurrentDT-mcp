@@ -2,28 +2,28 @@ import { DateFormatter } from '../../utils/DateFormatter';
 import { DEFAULT_FORMATS } from '../../types/DateTimeTypes';
 
 describe('DateFormatter', () => {
-  const testDate = new Date('2025-08-22T14:30:00.123Z');
+  const testDate = new Date('2025-08-26T14:30:00.123Z');
 
   describe('format', () => {
     it('should format ISO dates correctly', () => {
       const result = DateFormatter.format(testDate, 'iso');
-      expect(result).toBe('2025-08-22T14:30:00.123Z');
+      expect(result).toBe('2025-08-26T14:30:00.123Z');
     });
 
     it('should format custom patterns correctly', () => {
       const result = DateFormatter.format(testDate, 'YYYY-MM-DD HH:mm:ss');
-      expect(result).toBe('2025-08-22 14:30:00');
+      expect(result).toBe('2025-08-26 14:30:00');
     });
 
     it('should handle predefined formats', () => {
       const result = DateFormatter.format(testDate, 'filename');
-      expect(result).toBe('2025-08-22-143000');
+      expect(result).toBe('2025-08-26-143000');
     });
 
     it('should handle all format tokens', () => {
       const format = 'YYYY-MM-DD HH:mm:ss.SSS';
       const result = DateFormatter.format(testDate, format);
-      expect(result).toBe('2025-08-22 14:30:00.123');
+      expect(result).toBe('2025-08-26 14:30:00.123');
     });
 
     it('should throw error for invalid date', () => {
@@ -33,7 +33,7 @@ describe('DateFormatter', () => {
 
     it('should default to ISO format when format is undefined', () => {
       const result = DateFormatter.format(testDate);
-      expect(result).toBe('2025-08-22T14:30:00.123Z');
+      expect(result).toBe('2025-08-26T14:30:00.123Z');
     });
   });
 

@@ -5,7 +5,7 @@
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  
-**Version:** 1.1.0  
+**Version:** 1.1.1  
 **Date:** August 23, 2025
 
 ## 1. Executive Summary
@@ -200,7 +200,7 @@ Alice is working on a database migration project. She opens Cursor and starts a 
 
 **Claude:** "I'll create the migration file. What date should I use for the filename?"
 
-**Alice:** *Interrupts flow, checks calendar* "Use 2025-08-22"
+**Alice:** *Interrupts flow, checks calendar* "Use 2025-08-26"
 
 **Claude:** "Here's your migration file: `20250822_add_user_preferences.sql`"
 
@@ -217,7 +217,7 @@ Alice is working on a database migration project with @strix-ai/currentdt-mcp in
 
 **Alice:** "Create a new SQL migration file for adding user preferences table"
 
-**Claude:** *Automatically calls get_current_datetime tool* "Here's your migration file: `migration_2025-08-22T14-30-00_add_user_preferences.sql`"
+**Claude:** *Automatically calls get_current_datetime tool* "Here's your migration file: `migration_2025-08-26T14-30-00_add_user_preferences.sql`"
 
 **Alice:** "Perfect! Now add the CREATE TABLE statement with proper columns."
 

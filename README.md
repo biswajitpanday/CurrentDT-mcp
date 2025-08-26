@@ -114,7 +114,7 @@ Same configuration as Cursor IDE - add to Windsurf MCP settings file.
 
 ### 1. SQL Migration Files
 **User:** "Create a migration to add user preferences table"  
-**Result:** Migration file named `2025-08-23-143000_add_user_preferences.sql` with current timestamp
+**Result:** Migration file named `2025-08-26-143000_add_user_preferences.sql` with current timestamp
 
 **MCP Tool Call Example:**
 ```json
@@ -133,7 +133,7 @@ Same configuration as Cursor IDE - add to Windsurf MCP settings file.
 
 ### 3. Dated Documentation
 **User:** "Update the changelog with today's date"  
-**Result:** Changelog entry with current date: `## [1.1.0] - 2025-08-23`
+**Result:** Changelog entry with current date: `## [1.1.1] - 2025-08-26`
 
 ## API Reference
 
@@ -193,11 +193,11 @@ Create `currentdt-config.json` for custom settings:
 
 ## Common Format Patterns
 
-- `"iso"` → `2025-08-23T14:30:00.000Z`
-- `"YYYY-MM-DD"` → `2025-08-23`
-- `"YYYY-MM-DD HH:mm:ss"` → `2025-08-23 14:30:00`
+- `"iso"` → `2025-08-26T14:30:00.000Z`
+- `"YYYY-MM-DD"` → `2025-08-26`
+- `"YYYY-MM-DD HH:mm:ss"` → `2025-08-26 14:30:00`
 - `"MM/DD/YYYY"` → `08/23/2025`
-- `"YYYY-MM-DD-HHmmss"` → `2025-08-23-143000`
+- `"YYYY-MM-DD-HHmmss"` → `2025-08-26-143000`
 
 ## Troubleshooting
 

@@ -5,7 +5,7 @@
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  
-**Version:** 1.1.0  
+**Version:** 1.1.1  
 **Date:** August 23, 2025
 
 ## 1. Introduction
@@ -56,7 +56,7 @@ The system operates as an MCP server that integrates with AI development environ
 **Priority:** High  
 **Description:** The system shall support configurable date formats.
 - **Formats Supported:**
-  - ISO 8601 (default): `2025-08-22T14:30:00.000Z`
+  - ISO 8601 (default): `2025-08-26T14:30:00.000Z`
   - Custom formats using standard format strings
 - **Acceptance Criteria:**
   - Default to ISO format if no format specified
@@ -189,7 +189,7 @@ flowchart TD
 1. Alice asks AI to create SQL script with date-stamped filename
 2. AI assistant invokes `get_current_datetime` tool
 3. System returns current datetime in ISO format
-4. AI assistant generates filename: `migration_2025-08-22T14-30-00.sql`
+4. AI assistant generates filename: `migration_2025-08-26T14-30-00.sql`
 5. Alice receives properly dated filename without manual input
 
 ### 7.2 UC-002: Custom Date Format Request

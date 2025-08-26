@@ -57,8 +57,8 @@ The tool works immediately after `npm install -g @strix-ai/currentdt-mcp` — no
 
 **2. Multiple Format Support**
 Beyond ISO 8601, it supports custom formats using familiar tokens:
-- `YYYY-MM-DD HH:mm:ss` → `2025-08-23 14:30:00`
-- `YYYY-MM-DD-HHmmss` → `2025-08-23-143000` (perfect for migration files)
+- `YYYY-MM-DD HH:mm:ss` → `2025-08-26 14:30:00`
+- `YYYY-MM-DD-HHmmss` → `2025-08-26-143000` (perfect for migration files)
 - `MM/DD/YYYY` → `08/23/2025`
 
 **3. Provider Architecture**
@@ -83,7 +83,7 @@ After:
 ```
 You: "Create a migration to add user preferences"  
 Claude: "I'll create a migration file with the current timestamp..."
-[Generates: 2025-08-23-143022_add_user_preferences.sql]
+[Generates: 2025-08-26-143022_add_user_preferences.sql]
 You: [Perfect! Continues coding]
 ```
 
@@ -148,7 +148,7 @@ The MCP community is incredibly helpful. Sharing early versions and getting feed
 
 ## Looking Forward
 
-Version 1.1.0 represents a stable foundation, but the roadmap is exciting:
+Version 1.1.1 represents a stable foundation, but the roadmap is exciting:
 
 - **Enhanced Provider System**: Plugin architecture for loading custom providers from npm packages
 - **Timezone Management**: Comprehensive timezone support for global teams
@@ -176,7 +176,7 @@ graph TD
     C --> D["⚡ CurrentDT MCP Server<br/>processes request"]
     D --> E["⏰ Time Provider<br/>fetches current time"]
     E --> F["📝 Formatted DateTime<br/>returned to AI"]
-    F --> G["✅ AI generates<br/>timestamped migration:<br/>2025-08-23-143000_add_users.sql"]
+    F --> G["✅ AI generates<br/>timestamped migration:<br/>2025-08-26-143000_add_users.sql"]
     G --> H["🎉 Developer continues<br/>coding without interruption"]
     
     style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px

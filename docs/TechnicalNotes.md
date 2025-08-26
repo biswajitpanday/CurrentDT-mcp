@@ -1,6 +1,6 @@
 # Technical Notes - @strix-ai/currentdt-mcp
 
-> **Built for AI, Built with AI** - Technical insights from AI-guided development process v1.1.0
+> **Built for AI, Built with AI** - Technical insights from AI-guided development process v1.1.1
 
 ## MCP Compatibility Requirements
 
@@ -101,7 +101,7 @@
 
 ## Future Enhancements Roadmap
 
-### Short-term (v1.1.0)
+### Short-term (v1.1.1)
 - Enhanced caching for performance
 - Additional timezone support
 - More predefined formats

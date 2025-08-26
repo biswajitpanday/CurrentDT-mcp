@@ -10,7 +10,7 @@ config:
 **Author:** Biswajit Panday  
 **Email:** biswajitmailid@gmail.com  
 **Website:** biswajitpanday.github.io  
-**Version:** 1.1.0  
+**Version:** 1.1.1  
 **Date:** August 23, 2025
 
 ## 1. Architecture Overview
