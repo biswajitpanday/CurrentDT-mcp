@@ -1,5 +1,3 @@
-[![MSeeP.ai Security Assessment Badge](https://mseep.net/pr/biswajitpanday-currentdt-mcp-badge.png)](https://mseep.ai/app/biswajitpanday-currentdt-mcp)
-
 # @strix-ai/currentdt-mcp
 
 > Real-time date and time access for AI assistants via Model Context Protocol (MCP)
@@ -10,6 +8,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![Verified on MSeeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/e500e8da-135c-4995-bd94-9992706efc17)
+
+<a href="https://mseep.ai/app/biswajitpanday-currentdt-mcp">
+  <img src="https://mseep.net/pr/biswajitpanday-currentdt-mcp-badge.png" alt="MSeeP.ai Security Assessment Badge" width="150"/>
+</a>
 
 ## 📑 Table of Contents
 - [Overview](#overview)
