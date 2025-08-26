@@ -11,6 +11,10 @@ on:
       - '.gitignore'
       - 'LICENSE'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   publish:
     name: 📦 Build & Publish to NPM
