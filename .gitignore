@@ -112,6 +112,9 @@ config.json
 # Internal working documents. Kept on disk, not tracked: they described features that
 # never existed (timezone support, caching, hot config reload) and drifted far from the
 # implementation, drawing more maintenance churn than the source they documented.
-docs/
+# Written as `docs/*` rather than `docs/` on purpose -- git cannot re-include a path
+# inside an excluded directory, and docs/v2/ below has to stay tracked.
+docs/*
+!docs/v2/
 blogs/
 CLAUDE.md
