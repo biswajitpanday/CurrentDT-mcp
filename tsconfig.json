@@ -11,20 +11,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"],
-      "@/types/*": ["types/*"],
-      "@/services/*": ["services/*"],
-      "@/providers/*": ["providers/*"],
-      "@/utils/*": ["utils/*"],
-      "@/server/*": ["server/*"]
-    }
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"

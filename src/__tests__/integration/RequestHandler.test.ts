@@ -1,7 +1,16 @@
 import { RequestHandler } from '../../server/RequestHandler';
 import { DateTimeService } from '../../services/DateTimeService';
 import { ToolRegistry, GET_CURRENT_DATETIME_TOOL } from '../../server/ToolRegistry';
-import { CallToolRequest } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+
+/** `content` is a union of text/image/audio/resource blocks; narrow to the text one. */
+const textOf = (result: CallToolResult): string => {
+  const block = result.content[0];
+  if (block.type !== 'text') {
+    throw new Error(`Expected a text content block, received '${block.type}'`);
+  }
+  return block.text;
+};
 
 describe('RequestHandler Integration', () => {
   let requestHandler: RequestHandler;
@@ -29,7 +38,7 @@ describe('RequestHandler Integration', () => {
       
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe('text');
-      expect(result.content[0].text).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(textOf(result)).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
     it('should handle get_current_datetime with format argument', async () => {
@@ -47,7 +56,7 @@ describe('RequestHandler Integration', () => {
       
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe('text');
-      expect(result.content[0].text).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(textOf(result)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
     it('should handle get_current_datetime with provider argument', async () => {
@@ -65,7 +74,7 @@ describe('RequestHandler Integration', () => {
       
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe('text');
-      expect(typeof result.content[0].text).toBe('string');
+      expect(typeof textOf(result)).toBe('string');
     });
 
     it('should handle get_current_datetime with both arguments', async () => {
@@ -84,7 +93,7 @@ describe('RequestHandler Integration', () => {
       
       expect(result.content).toHaveLength(1);
       expect(result.content[0].type).toBe('text');
-      expect(result.content[0].text).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+      expect(textOf(result)).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
     });
 
     it('should throw error for unknown tool', async () => {

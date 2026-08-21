@@ -58,12 +58,14 @@ describe('MCPServer Integration', () => {
     it('should have valid tool schema structure', () => {
       const toolRegistry = server.getToolRegistry();
       const tools = toolRegistry.getAllAsTools();
-      const tool = tools[0];
-      
-      expect(tool.inputSchema.properties.format).toBeDefined();
-      expect(tool.inputSchema.properties.provider).toBeDefined();
-      expect(tool.inputSchema.properties.format.type).toBe('string');
-      expect(tool.inputSchema.properties.provider.type).toBe('string');
+      // `Tool.inputSchema.properties` is optional in the SDK types, so narrow first.
+      const properties = tools[0].inputSchema.properties as Record<string, { type: string }> | undefined;
+
+      expect(properties).toBeDefined();
+      expect(properties!.format).toBeDefined();
+      expect(properties!.provider).toBeDefined();
+      expect(properties!.format.type).toBe('string');
+      expect(properties!.provider.type).toBe('string');
     });
   });
 

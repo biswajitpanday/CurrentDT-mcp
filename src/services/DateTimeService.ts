@@ -44,8 +44,12 @@ export class DateTimeService implements IDateTimeService {
       }
 
       const validOptions = validation.data as DateTimeOptions;
-      
-      // Apply defaults from configuration
+
+      // Whether the caller named a provider, checked before zod fills in its default.
+      // An explicit choice must fail loudly rather than silently degrading to local time.
+      const providerWasRequested = typeof sanitizedOptions?.provider === 'string'
+        && sanitizedOptions.provider.length > 0;
+
       const format = validOptions.format || this.config?.defaultFormat || 'iso';
       const providerName = validOptions.provider || this.config?.defaultProvider || 'local';
 
@@ -77,6 +81,16 @@ export class DateTimeService implements IDateTimeService {
           correlationId
         });
       } catch (error) {
+        // Silently substituting local time here would hand back a different clock
+        // than the one the caller asked for, with no way to tell.
+        if (providerWasRequested) {
+          throw new ProviderError(
+            `Provider '${providerName}' failed and no fallback was applied because it was requested explicitly: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            providerName,
+            true
+          );
+        }
+
         this.logger.warn('Primary provider failed, attempting fallback', {
           provider: providerName,
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -152,7 +166,7 @@ export class DateTimeService implements IDateTimeService {
     return [
       'iso',
       ...Object.keys(DateFormatter.getPredefinedFormats()),
-      'custom (using YYYY, MM, DD, HH, mm, ss, SSS tokens)'
+      `custom (using ${Object.keys(DateFormatter.getSupportedTokens()).join(', ')} tokens)`
     ];
   }
 

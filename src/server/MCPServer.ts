@@ -13,6 +13,11 @@ import { ToolRegistry, GET_CURRENT_DATETIME_TOOL } from './ToolRegistry';
 import { RequestHandler } from './RequestHandler';
 import { Logger } from '../utils/Logger';
 
+// Single source of truth for the version reported in the MCP handshake. Hardcoding it
+// here means `npm version` bumps package.json and leaves the handshake reporting stale.
+const { version: SERVER_VERSION } = require('../../package.json');
+const SERVER_NAME = '@strix-ai/currentdt-mcp';
+
 export class MCPServer {
   private server: Server;
   private dateTimeService: DateTimeService;
@@ -39,8 +44,8 @@ export class MCPServer {
     // Create MCP server
     this.server = new Server(
       {
-        name: '@strix-ai/currentdt-mcp',
-        version: '1.1.7',
+        name: SERVER_NAME,
+        version: SERVER_VERSION,
       },
       {
         capabilities: {
@@ -52,7 +57,6 @@ export class MCPServer {
 
     this.setupHandlers();
     this.registerTools();
-    this.setupConfigurationWatcher();
   }
 
   private setupHandlers(): void {
@@ -88,55 +92,43 @@ export class MCPServer {
     });
   }
 
-  private setupConfigurationWatcher(): void {
-    this.configManager.onConfigChange((newConfig) => {
-      this.logger.info('Configuration changed, updating services');
-      this.dateTimeService.updateConfiguration(newConfig);
-    });
-  }
-
   async start(): Promise<void> {
     try {
-      // Load configuration
+      // Load configuration, then push it into the service. The constructor can only see
+      // defaults because loadConfig is async; without this the config file and every
+      // CURRENTDT_* variable are silently ignored for the whole process lifetime.
       await this.configManager.loadConfig();
-      this.configManager.watchConfig();
+      this.dateTimeService.updateConfiguration(this.configManager.getConfig());
 
       // Create transport and connect
       const transport = new StdioServerTransport();
       await this.server.connect(transport);
 
       this.logger.info('MCP server started successfully', {
-        name: '@strix-ai/currentdt-mcp',
-        version: '1.1.7',
+        name: SERVER_NAME,
+        version: SERVER_VERSION,
         capabilities: ['tools', 'prompts'],
         toolCount: this.toolRegistry.getAll().length
       });
-
-      // Keep the process running
-      process.on('SIGINT', () => this.stop());
-      process.on('SIGTERM', () => this.stop());
 
     } catch (error) {
       this.logger.fatal('Failed to start MCP server', {
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined
       });
-      
-      process.exit(1);
+
+      throw error;
     }
   }
 
+  /**
+   * Closes the transport. Deliberately does NOT terminate the process -- exiting from
+   * here kills any host that embeds the server, including the Jest worker running the
+   * integration suite. Process lifetime is the caller's decision (see src/index.ts).
+   */
   async stop(): Promise<void> {
-    try {
-      await this.server.close();
-      this.logger.info('MCP server stopped gracefully');
-      process.exit(0);
-    } catch (error) {
-      this.logger.error('Error stopping MCP server', {
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      process.exit(1);
-    }
+    await this.server.close();
+    this.logger.info('MCP server stopped gracefully');
   }
 
   getServer(): Server {

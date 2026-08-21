@@ -2,8 +2,8 @@ import { DEFAULT_FORMATS, STANDARD_FORMAT_TOKENS } from '../types/DateTimeTypes'
 import { DateTimeError } from '../types/MCPTypes';
 
 export class DateFormatter {
-  private static readonly ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
-  private static readonly FORMAT_REGEX = /YYYY|MM|DD|HH|mm|ss|SSS/g;
+  // ZZ must precede Z, and SSS must precede ss, so the longer token wins the match.
+  private static readonly FORMAT_REGEX = /YYYY|MM|DD|HH|mm|SSS|ss|ZZ|Z/g;
 
   static format(date: Date, format: string = 'iso'): string {
     if (!date || isNaN(date.getTime())) {
@@ -14,14 +14,29 @@ export class DateFormatter {
       return date.toISOString();
     }
 
-    // Check if it's a predefined format
-    const predefinedFormat = DEFAULT_FORMATS[format as keyof typeof DEFAULT_FORMATS];
+    // Named format, e.g. "filename". Guarded against the prototype chain so that
+    // "constructor", "toString" and friends cannot resolve to a function.
+    const predefinedFormat = this.getPredefinedFormat(format);
     if (predefinedFormat) {
       return this.formatWithTokens(date, predefinedFormat);
     }
 
-    // Use custom format
+    if (!this.validateFormat(format)) {
+      throw new DateTimeError(
+        `Invalid format string: '${format}'. Expected "iso", a named format (${Object.keys(DEFAULT_FORMATS).join(', ')}), or a pattern containing at least one of: ${Object.keys(STANDARD_FORMAT_TOKENS).join(', ')}`,
+        -1,
+        undefined,
+        format
+      );
+    }
+
     return this.formatWithTokens(date, format);
+  }
+
+  private static getPredefinedFormat(format: string): string | undefined {
+    return Object.prototype.hasOwnProperty.call(DEFAULT_FORMATS, format)
+      ? DEFAULT_FORMATS[format as keyof typeof DEFAULT_FORMATS]
+      : undefined;
   }
 
   private static formatWithTokens(date: Date, formatString: string): string {
@@ -41,10 +56,37 @@ export class DateFormatter {
           return date.getSeconds().toString().padStart(2, '0');
         case 'SSS':
           return date.getMilliseconds().toString().padStart(3, '0');
+        case 'Z':
+          return this.getOffset(date, true);
+        case 'ZZ':
+          return this.getOffset(date, false);
         default:
           return token;
       }
     });
+  }
+
+  /**
+   * Renders the real UTC offset of the local time the other tokens are rendered in.
+   * Token formats use local-time getters, so a literal 'Z' would label local digits
+   * as UTC. Emitting the true offset keeps the output honest.
+   */
+  private static getOffset(date: Date, extended: boolean): string {
+    const totalMinutes = -date.getTimezoneOffset();
+
+    if (totalMinutes === 0) {
+      // ISO 8601 permits 'Z' for a zero offset, so a UTC host still emits valid ISO.
+      return extended ? 'Z' : '+0000';
+    }
+
+    const sign = totalMinutes < 0 ? '-' : '+';
+    const abs = Math.abs(totalMinutes);
+    const hours = Math.floor(abs / 60)
+      .toString()
+      .padStart(2, '0');
+    const minutes = (abs % 60).toString().padStart(2, '0');
+
+    return extended ? `${sign}${hours}:${minutes}` : `${sign}${hours}${minutes}`;
   }
 
   static validateFormat(format: string): boolean {
@@ -56,20 +98,19 @@ export class DateFormatter {
       return true;
     }
 
-    // Check if it's a predefined format
-    if (format in DEFAULT_FORMATS) {
+    if (Object.prototype.hasOwnProperty.call(DEFAULT_FORMATS, format)) {
       return true;
     }
 
-    // Validate custom format tokens
-    const tokens = format.match(this.FORMAT_REGEX);
-    if (!tokens) {
-      // Format string without any tokens is valid (static text)
-      return true;
-    }
+    // A pattern must actually contain a date/time token. Without this check any
+    // string is "valid" and gets echoed back to the caller as if it were a datetime.
+    return this.FORMAT_REGEX.test(this.reset(format));
+  }
 
-    // Check if all tokens are valid
-    return tokens.every(token => token in STANDARD_FORMAT_TOKENS);
+  /** `FORMAT_REGEX` is global, so lastIndex must be cleared between `test` calls. */
+  private static reset(format: string): string {
+    this.FORMAT_REGEX.lastIndex = 0;
+    return format;
   }
 
   static getSupportedTokens(): typeof STANDARD_FORMAT_TOKENS {

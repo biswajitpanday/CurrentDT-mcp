@@ -113,7 +113,7 @@ function testMCPIntegration() {
     setTimeout(() => {
       console.log('\n✅ MCP Integration test completed!');
       console.log('\nTo test with real MCP clients:');
-      console.log('- Use the configuration files in examples/mcp-configs/');
+      console.log('- Use the client configuration snippets in README.md');
       console.log('- Install globally: npm install -g @strix-ai/currentdt-mcp');
       console.log('- Configure your MCP client and restart it');
     }, 500);

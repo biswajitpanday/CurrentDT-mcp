@@ -13,11 +13,9 @@ describe('DateTimeService', () => {
       providers: {
         local: {
           name: 'local',
-          enabled: true,
           priority: 1,
         }
       },
-      customFormats: {},
       debug: false,
       logLevel: 'info' as const,
     };

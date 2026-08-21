@@ -1,23 +1,12 @@
 import { z } from 'zod';
 
+// No .default() here on purpose. Defaults applied at this layer are indistinguishable
+// from a caller-supplied value, which made `config.defaultFormat` / CURRENTDT_FORMAT
+// permanently unreachable. Absent stays absent; DateTimeService resolves the default.
 export const DateTimeOptionsSchema = z.object({
-  format: z.string().optional().default('iso'),
-  provider: z.string().optional().default('local'),
+  format: z.string().optional(),
+  provider: z.string().optional(),
 }).strict();
-
-export type DateTimeOptions = z.infer<typeof DateTimeOptionsSchema>;
-
-export interface MCPToolRequest {
-  name: string;
-  arguments?: Record<string, any>;
-}
-
-export interface MCPToolResponse {
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-}
 
 export interface MCPError extends Error {
   code: number;

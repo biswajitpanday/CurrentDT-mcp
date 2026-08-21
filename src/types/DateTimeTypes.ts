@@ -1,10 +1,3 @@
-export interface IDateTimeProvider {
-  getCurrentDateTime(): Promise<Date>;
-  isAvailable(): Promise<boolean>;
-  getName(): string;
-  getPriority(): number;
-}
-
 export interface IDateTimeService {
   getCurrentDateTime(options?: DateTimeOptions): Promise<string>;
   validateFormat(format: string): boolean;
@@ -16,26 +9,6 @@ export interface DateTimeOptions {
   provider?: string;
 }
 
-export interface ProviderConfig {
-  name: string;
-  enabled: boolean;
-  priority: number;
-  config?: Record<string, any>;
-}
-
-export interface RemoteProviderConfig extends ProviderConfig {
-  url: string;
-  timeout: number;
-}
-
-export interface CacheConfig {
-  enabled: boolean;
-  ttl: number; // Time to live in milliseconds
-  maxSize?: number;
-}
-
-export type DateFormat = 'iso' | string;
-
 export const STANDARD_FORMAT_TOKENS = {
   YYYY: '4-digit year',
   MM: '2-digit month',
@@ -44,10 +17,13 @@ export const STANDARD_FORMAT_TOKENS = {
   mm: '2-digit minutes',
   ss: '2-digit seconds',
   SSS: '3-digit milliseconds',
+  Z: 'UTC offset, extended (+02:00, or Z when the offset is zero)',
+  ZZ: 'UTC offset, basic (+0200)',
 } as const;
 
+// Token patterns render in LOCAL time. A named format must therefore never embed a
+// literal 'Z' -- use the Z token, which emits the real offset.
 export const DEFAULT_FORMATS = {
-  iso: 'YYYY-MM-DDTHH:mm:ss.SSSZ',
   filename: 'YYYY-MM-DD-HHmmss',
   logdate: 'YYYY/MM/DD HH:mm:ss',
   simple: 'MM/DD/YYYY',

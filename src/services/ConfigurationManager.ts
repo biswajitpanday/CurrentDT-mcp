@@ -1,16 +1,15 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
-import { Configuration, IConfigurationManager, ConfigurationSchema } from '../types/ConfigTypes';
+import { Configuration, ConfigurationSchema } from '../types/ConfigTypes';
 import { ConfigurationError } from '../types/MCPTypes';
 import { Logger } from '../utils/Logger';
 
-export class ConfigurationManager implements IConfigurationManager {
+export class ConfigurationManager {
   private static instance: ConfigurationManager;
   private config: Configuration;
   private logger: Logger;
   private configPath?: string;
-  private watchers: ((config: Configuration) => void)[] = [];
 
   private constructor() {
     this.logger = Logger.getInstance();
@@ -140,93 +139,5 @@ export class ConfigurationManager implements IConfigurationManager {
 
   getConfig(): Configuration {
     return { ...this.config };
-  }
-
-  validateConfig(config: Partial<Configuration>): boolean {
-    try {
-      const result = ConfigurationSchema.partial().safeParse(config);
-      return result.success;
-    } catch {
-      return false;
-    }
-  }
-
-  updateConfig(updates: Partial<Configuration>): void {
-    const newConfig = { ...this.config, ...updates };
-    
-    if (!this.validateConfig(newConfig)) {
-      throw new ConfigurationError(
-        'Invalid configuration update',
-        ['Configuration validation failed for update']
-      );
-    }
-
-    this.config = newConfig as Configuration;
-    this.notifyWatchers();
-    
-    this.logger.info('Configuration updated', updates);
-  }
-
-  async saveConfig(): Promise<void> {
-    if (!this.configPath) {
-      this.configPath = join(process.cwd(), 'currentdt-config.json');
-    }
-
-    try {
-      const configContent = JSON.stringify(this.config, null, 2);
-      await fs.writeFile(this.configPath, configContent, 'utf-8');
-      
-      this.logger.info('Configuration saved', { path: this.configPath });
-    } catch (error) {
-      throw new ConfigurationError(
-        `Failed to save configuration to ${this.configPath}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        [],
-        this.configPath
-      );
-    }
-  }
-
-  watchConfig(): void {
-    if (!this.configPath) {
-      this.logger.debug('No configuration file to watch');
-      return;
-    }
-
-    // Simple polling-based watching (could be enhanced with fs.watch)
-    setInterval(async () => {
-      try {
-        await fs.stat(this.configPath!); // Check if file exists
-        // This is a simplified implementation
-        // In a real implementation, we'd check modification time
-        // and reload only if the file has changed
-      } catch (error) {
-        this.logger.warn('Configuration file watch error', { 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        });
-      }
-    }, 30000); // Check every 30 seconds
-  }
-
-  onConfigChange(callback: (config: Configuration) => void): void {
-    this.watchers.push(callback);
-  }
-
-  private notifyWatchers(): void {
-    this.watchers.forEach(callback => {
-      try {
-        callback(this.getConfig());
-      } catch (error) {
-        this.logger.error('Error in configuration change callback', {
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-    });
-  }
-
-  reset(): void {
-    this.config = this.getDefaultConfig();
-    this.configPath = undefined;
-    this.watchers = [];
-    this.logger.info('Configuration reset to defaults');
   }
 }

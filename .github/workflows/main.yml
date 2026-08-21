@@ -52,7 +52,7 @@ jobs:
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           
           # Check if this version exists on npm
-          if npm view @biswajitpanday/currentdt-mcp@$CURRENT_VERSION version 2>/dev/null; then
+          if npm view @strix-ai/currentdt-mcp@$CURRENT_VERSION version 2>/dev/null; then
             echo "Version $CURRENT_VERSION already exists on npm"
             echo "publish=false" >> $GITHUB_OUTPUT
           else
@@ -88,13 +88,13 @@ jobs:
           tag_name: v${{ steps.version-check.outputs.version }}
           release_name: 🚀 Release v${{ steps.version-check.outputs.version }}
           body: |
-            ## 🎉 @biswajitpanday/currentdt-mcp v${{ steps.version-check.outputs.version }}
+            ## 🎉 @strix-ai/currentdt-mcp v${{ steps.version-check.outputs.version }}
             
             **Built for AI, Built with AI** - Enhanced datetime capabilities for AI assistants
             
             ### 🔗 Quick Install
             ```bash
-            npm install -g @biswajitpanday/currentdt-mcp
+            npm install -g @strix-ai/currentdt-mcp
             ```
             
             ### 🎯 MCP Client Integration
@@ -115,7 +115,7 @@ jobs:
             
             ---
             
-            **Package:** [@biswajitpanday/currentdt-mcp](https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp)  
+            **Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)  
             **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
           draft: false
           prerelease: false
@@ -123,8 +123,8 @@ jobs:
       - name: ✅ Success Notification
         if: steps.version-check.outputs.publish == 'true'
         run: |
-          echo "🎉 Successfully published @biswajitpanday/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM!"
-          echo "📦 NPM: https://www.npmjs.com/package/@biswajitpanday/currentdt-mcp"
+          echo "🎉 Successfully published @strix-ai/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM!"
+          echo "📦 NPM: https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
           echo "🏷️ Release: https://github.com/biswajitpanday/CurrentDT-mcp/releases/tag/v${{ steps.version-check.outputs.version }}"
       
       - name: 📝 No Publish Notification  

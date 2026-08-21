@@ -25,7 +25,6 @@
 - [Common Format Patterns](#common-format-patterns)
 - [Troubleshooting](#troubleshooting)
 - [Development](#development)
-- [Documentation](#documentation)
 - [Support & Links](#support--links)
 - [Contributing](#contributing)
 - [License](#license)
@@ -37,12 +36,14 @@
 ## Quick Start
 
 ```bash
-# Install globally
-npm install -g @strix-ai/currentdt-mcp
+# No install required -- point your MCP client at npx (see integration guides below)
+npx -y @strix-ai/currentdt-mcp
 
-# Configure your MCP client (see integration guides below)
-# Start using current datetime in AI conversations!
+# Or install globally
+npm install -g @strix-ai/currentdt-mcp
 ```
+
+Requires **Node.js 18 or newer**.
 
 ## User Flow
 
@@ -184,14 +185,9 @@ Create `currentdt-config.json` for custom settings:
   "defaultFormat": "iso",
   "defaultProvider": "local",
   "providers": {
-    "local": {
-      "name": "local",
-      "enabled": true,
-      "priority": 1
-    },
+    "local": { "name": "local", "priority": 1 },
     "remote": {
       "name": "remote",
-      "enabled": false,
       "priority": 2,
       "config": {
         "url": "https://worldtimeapi.org/api/timezone/UTC",
@@ -199,24 +195,36 @@ Create `currentdt-config.json` for custom settings:
       }
     }
   },
-  "customFormats": {
-    "filename": "YYYY-MM-DD-HHmmss",
-    "simple": "MM/DD/YYYY"
-  },
-  "cache": {
-    "enabled": true,
-    "ttl": 1000
-  }
+  "debug": false,
+  "logLevel": "info"
 }
 ```
 
+Environment variables override the file: `CURRENTDT_FORMAT`, `CURRENTDT_PROVIDER`,
+`CURRENTDT_DEBUG`, `CURRENTDT_CONFIG`.
+
 ## Common Format Patterns
 
-- `"iso"` → `2025-08-26T14:30:00.000Z`
-- `"YYYY-MM-DD"` → `2025-08-26`
-- `"YYYY-MM-DD HH:mm:ss"` → `2025-08-26 14:30:00`
-- `"MM/DD/YYYY"` → `08/23/2025`
-- `"YYYY-MM-DD-HHmmss"` → `2025-08-26-143000`
+> **Timezone:** `"iso"` returns **UTC**. Every token pattern renders the host machine's
+> **local** time. Add the `Z` token to emit the real UTC offset -- never write a literal
+> `Z` into a pattern, since that would label local digits as UTC.
+
+For a host at UTC+02:00, at the instant `2025-08-26T14:30:00.123Z`:
+
+| format | output | zone |
+|---|---|---|
+| `"iso"` | `2025-08-26T14:30:00.123Z` | UTC |
+| `"YYYY-MM-DD"` | `2025-08-26` | local |
+| `"YYYY-MM-DD HH:mm:ss"` | `2025-08-26 16:30:00` | local |
+| `"MM/DD/YYYY"` | `08/26/2025` | local |
+| `"YYYY-MM-DD-HHmmss"` | `2025-08-26-163000` | local |
+| `"YYYY-MM-DDTHH:mm:ss.SSSZ"` | `2025-08-26T16:30:00.123+02:00` | local + offset |
+
+**Tokens:** `YYYY` `MM` `DD` `HH` `mm` `ss` `SSS` `Z` (`+02:00`) `ZZ` (`+0200`).
+**Named patterns:** `filename`, `logdate`, `simple`.
+
+A pattern must contain at least one token. Free text such as `"what time is it"` is
+rejected rather than echoed back.
 
 ## Troubleshooting
 
@@ -249,14 +257,6 @@ npm run dev
 - `npm test` - Run all tests  
 - `npm run lint` - ESLint check
 - `npm run format` - Prettier format
-
-## Documentation
-
-Detailed documentation available in `/docs`:
-- [TaskList.md](docs/TaskList.md) - Development progress tracking
-- [Architecture.md](docs/Architecture.md) - System architecture and design
-- [SRS.md](docs/SRS.md) - Software requirements specification
-- [PRD.md](docs/PRD.md) - Product requirements document
 
 ## Contributing
 

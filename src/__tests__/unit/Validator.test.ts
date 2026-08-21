@@ -14,13 +14,12 @@ describe('Validator', () => {
       expect(result.data).toEqual(options);
     });
 
-    it('should apply defaults for missing options', () => {
+    it('should leave missing options absent rather than filling in defaults', () => {
+      // Defaults belong to DateTimeService, which layers configuration underneath.
+      // Filling them in here made `config.defaultFormat` permanently unreachable.
       const result = Validator.validateDateTimeOptions({});
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({
-        format: 'iso',
-        provider: 'local'
-      });
+      expect(result.data).toEqual({});
     });
 
     it('should validate custom formats', () => {
@@ -85,19 +84,22 @@ describe('Validator', () => {
       expect(result).toEqual(input);
     });
 
-    it('should remove dangerous properties', () => {
-      const input = {
-        format: 'iso',
-        __proto__: { malicious: true },
-        constructor: 'hack',
-        prototype: 'exploit'
-      };
-      
+    it('should remove dangerous own properties', () => {
+      // Built via JSON.parse, not an object literal: a literal's `__proto__` key sets
+      // the prototype rather than creating an own property, so it would not exercise
+      // the code under test at all.
+      const input = JSON.parse('{"format":"iso","__proto__":{"malicious":true},"constructor":"hack","prototype":"exploit"}');
+
       const result = Validator.sanitizeInput(input);
+
       expect(result).toEqual({ format: 'iso' });
-      expect(result).not.toHaveProperty('__proto__');
-      expect(result).not.toHaveProperty('constructor');
-      expect(result).not.toHaveProperty('prototype');
+      // `toHaveProperty` walks the prototype chain, so `constructor` is always found on
+      // any plain object. Own-key assertions are the only meaningful check here.
+      expect(Object.keys(result)).toEqual(['format']);
+      expect(Object.prototype.hasOwnProperty.call(result, '__proto__')).toBe(false);
+      expect(Object.prototype.hasOwnProperty.call(result, 'constructor')).toBe(false);
+      expect(Object.prototype.hasOwnProperty.call(result, 'prototype')).toBe(false);
+      expect(({} as any).malicious).toBeUndefined();
     });
 
     it('should handle null and undefined', () => {

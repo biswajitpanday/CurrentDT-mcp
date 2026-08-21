@@ -67,7 +67,23 @@ For more information, visit: https://github.com/biswajitpanday/CurrentDT-mcp
     // Start MCP server
     const server = new MCPServer();
     await server.start();
-    
+
+    // Process lifetime is owned here, not by MCPServer -- see the note on stop().
+    const shutdown = async () => {
+      try {
+        await server.stop();
+        process.exit(0);
+      } catch (error) {
+        logger.error('Error stopping MCP server', {
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+        process.exit(1);
+      }
+    };
+
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
+
   } catch (error) {
     logger.fatal('Application startup failed', {
       error: error instanceof Error ? error.message : 'Unknown error',

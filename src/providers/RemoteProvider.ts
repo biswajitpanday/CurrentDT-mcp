@@ -20,18 +20,18 @@ export class RemoteProvider implements IDateTimeProvider {
   }
 
   async getCurrentDateTime(): Promise<Date> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    const controller = new AbortController();
+    // Declared outside the try so the finally can always clear it; when fetch rejects
+    // an abort timer left running keeps the event loop alive for the full timeout.
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
+    try {
       const response = await fetch(this.url, {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json',
         },
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new ProviderError(
@@ -97,23 +97,26 @@ export class RemoteProvider implements IDateTimeProvider {
         this.name,
         true
       );
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   async isAvailable(): Promise<boolean> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000); // Quick health check
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // Quick health check
 
+    try {
       const response = await fetch(this.url, {
         method: 'HEAD',
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
       return response.ok;
     } catch {
       return false;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
