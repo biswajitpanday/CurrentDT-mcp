@@ -10,48 +10,91 @@ on:
       - 'examples/**'
       - '.gitignore'
       - 'LICENSE'
-
-permissions:
-  contents: write
-  packages: write
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  publish:
-    name: 📦 Build & Publish to NPM
+  test:
+    name: 🧪 Test on Node ${{ matrix.node }}
     runs-on: ubuntu-latest
-    
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every version in the declared engines range. v1.1.7 could not start on
+        # 16/18/20 (ERR_REQUIRE_ESM) and CI never noticed because it only ever ran
+        # on one version and never launched the built package.
+        node: ['18', '20', '22']
+
     steps:
       - name: 🛒 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v5
         with:
-          fetch-depth: 0
-      
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: ${{ matrix.node }}
           cache: 'npm'
-      
+
       - name: 📥 Install Dependencies
         run: npm ci
-      
+
       - name: 🏗️ Build Project
         run: npm run build
-      
-      - name: 🧪 Run Tests
+
+      - name: 🔍 Lint & Type-check
         run: |
           npm run lint
           npm run type-check
-          npm test
-      
+
+      - name: 🧪 Run Tests
+        run: npm test
+
+      - name: 🚦 Smoke-test the built package
+        # Loads dist/ through the real CommonJS entry point on this Node version --
+        # the check that would have caught the ESM-only SDK a year ago.
+        run: |
+          node dist/index.js --version
+          node dist/index.js --test
+
+  publish:
+    name: 📦 Publish to NPM
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # git tag + GitHub release
+      id-token: write   # OIDC token for npm Trusted Publishing
+
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: ⬆️ Ensure npm supports Trusted Publishing
+        # OIDC publishing needs npm >= 11.5.1; Node 22 bundles an older npm.
+        run: npm install -g npm@latest && npm --version
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Project
+        run: npm run build
+
       - name: 🔍 Check if version changed
         id: version-check
         run: |
-          # Get current version from package.json
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          
-          # Check if this version exists on npm
+
           if npm view @strix-ai/currentdt-mcp@$CURRENT_VERSION version 2>/dev/null; then
             echo "Version $CURRENT_VERSION already exists on npm"
             echo "publish=false" >> $GITHUB_OUTPUT
@@ -60,15 +103,16 @@ jobs:
             echo "publish=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: 🚀 Publish to NPM
         if: steps.version-check.outputs.publish == 'true'
+        # No NODE_AUTH_TOKEN: authentication is the OIDC token exchanged via the
+        # Trusted Publisher configured on npmjs.com for this repo + workflow file.
+        # npm attaches a provenance attestation automatically.
         run: |
           echo "Publishing version ${{ steps.version-check.outputs.version }} to NPM..."
           npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
       - name: 🏷️ Create Git Tag
         if: steps.version-check.outputs.publish == 'true'
         run: |
@@ -76,58 +120,32 @@ jobs:
           git config --local user.name "GitHub Action"
           git tag -a "v${{ steps.version-check.outputs.version }}" -m "Release v${{ steps.version-check.outputs.version }}"
           git push origin "v${{ steps.version-check.outputs.version }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: 📢 Create GitHub Release
         if: steps.version-check.outputs.publish == 'true'
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.version-check.outputs.version }}
-          release_name: 🚀 Release v${{ steps.version-check.outputs.version }}
-          body: |
-            ## 🎉 @strix-ai/currentdt-mcp v${{ steps.version-check.outputs.version }}
-            
-            **Built for AI, Built with AI** - Enhanced datetime capabilities for AI assistants
-            
-            ### 🔗 Quick Install
-            ```bash
-            npm install -g @strix-ai/currentdt-mcp
-            ```
-            
-            ### 🎯 MCP Client Integration
-            - ✅ **Cursor IDE** - Full compatibility
-            - ✅ **Claude Desktop** - Full compatibility  
-            - ✅ **VS Code** - Full compatibility
-            - ✅ **Windsurf** - Full compatibility
-            
-            ### 📋 Changes
-            - See commit history for detailed changes
-            - Universal MCP protocol compliance
-            - Enhanced datetime formatting options
-            - Improved error handling and logging
-            
-            ### 👥 Contributors
-            - **Author:** [Biswajit Panday](https://biswajitpanday.github.io)
-            - **Contributor:** Abdullah Saleh Robin
-            
-            ---
-            
-            **Package:** [@strix-ai/currentdt-mcp](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)  
-            **Documentation:** [GitHub Repository](https://github.com/biswajitpanday/CurrentDT-mcp)
-          draft: false
-          prerelease: false
-      
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version-check.outputs.version }}"
+          {
+            echo "## @strix-ai/currentdt-mcp v$VERSION"
+            echo
+            echo '```bash'
+            echo 'npx -y @strix-ai/currentdt-mcp'
+            echo '```'
+            echo
+            echo "**Package:** https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
+            echo "**Changes:** see the commit history for this tag."
+          } > release-notes.md
+          gh release create "v$VERSION" --title "🚀 Release v$VERSION" --notes-file release-notes.md
+
       - name: ✅ Success Notification
         if: steps.version-check.outputs.publish == 'true'
         run: |
-          echo "🎉 Successfully published @strix-ai/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM!"
-          echo "📦 NPM: https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
-          echo "🏷️ Release: https://github.com/biswajitpanday/CurrentDT-mcp/releases/tag/v${{ steps.version-check.outputs.version }}"
-      
-      - name: 📝 No Publish Notification  
+          echo "🎉 Published @strix-ai/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM"
+          echo "📦 https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
+          echo "🏷️ https://github.com/biswajitpanday/CurrentDT-mcp/releases/tag/v${{ steps.version-check.outputs.version }}"
+
+      - name: 📝 No Publish Notification
         if: steps.version-check.outputs.publish == 'false'
-        run: |
-          echo "ℹ️ No new version to publish - version already exists on NPM"
+        run: echo "ℹ️ No new version to publish - version already exists on NPM"
