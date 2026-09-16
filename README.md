@@ -4,10 +4,10 @@
 > 
 > **Built for AI, Built with AI** - Enhancing AI assistant capabilities through intelligent tooling
 
-[![npm version](https://badge.fury.io/js/@strix-ai%2Fcurrentdt-mcp.svg)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
+[![npm version](https://img.shields.io/npm/v/@strix-ai/currentdt-mcp)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
+[![node](https://img.shields.io/node/v/@strix-ai/currentdt-mcp)](https://www.npmjs.com/package/@strix-ai/currentdt-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
-[![Verified on MSeeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/e500e8da-135c-4995-bd94-9992706efc17)
 
 <a href="https://mseep.ai/app/biswajitpanday-currentdt-mcp">
   <img src="https://mseep.net/pr/biswajitpanday-currentdt-mcp-badge.png" alt="MSeeP.ai Security Assessment Badge" width="150"/>
@@ -76,19 +76,25 @@ Requires **Node.js 18 or newer**.
 
 ## MCP Client Integration
 
-### Cursor IDE
+Every client below uses the same server entry. `npx -y` fetches the package on first
+use and suppresses the install prompt, so nothing needs to be installed beforehand.
 
-```bash
-npm install -g @strix-ai/currentdt-mcp
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@strix-ai/currentdt-mcp"]
+}
 ```
 
-Add to `~/.cursor/mcp_servers.json`:
+### Cursor
+
+Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` in a project:
 ```json
 {
   "mcpServers": {
     "currentdt": {
       "command": "npx",
-      "args": ["@strix-ai/currentdt-mcp"]
+      "args": ["-y", "@strix-ai/currentdt-mcp"]
     }
   }
 }
@@ -96,39 +102,41 @@ Add to `~/.cursor/mcp_servers.json`:
 
 ### Claude Desktop
 
-```bash
-npm install -g @strix-ai/currentdt-mcp
-```
-
-Add to `~/claude_desktop_config.json`:
+Edit `claude_desktop_config.json` -- on macOS at
+`~/Library/Application Support/Claude/`, on Windows at `%APPDATA%\Claude\`:
 ```json
 {
   "mcpServers": {
     "currentdt": {
-      "command": "currentdt-mcp",
-      "args": []
+      "command": "npx",
+      "args": ["-y", "@strix-ai/currentdt-mcp"]
     }
   }
 }
 ```
 
-### VS Code (with MCP Extension)
+### VS Code
 
-Install package and configure via MCP extension settings or add to VS Code settings:
+Add to `.vscode/mcp.json` in a workspace, or under `"mcp"` in user `settings.json`:
 ```json
 {
-  "mcp.servers": [
-    {
-      "name": "currentdt", 
-      "command": "currentdt-mcp"
+  "servers": {
+    "currentdt": {
+      "command": "npx",
+      "args": ["-y", "@strix-ai/currentdt-mcp"]
     }
-  ]
+  }
 }
 ```
 
 ### Windsurf
 
-Same configuration as Cursor IDE - add to Windsurf MCP settings file.
+Add to `~/.codeium/windsurf/mcp_config.json`, same `mcpServers` shape as Cursor.
+
+### Installed globally instead
+
+If you prefer a fixed install over `npx`, run `npm install -g @strix-ai/currentdt-mcp`
+and use `"command": "currentdt-mcp"` with no `args` in any of the configs above.
 
 ## Real-World Usage Examples
 
@@ -153,7 +161,7 @@ Same configuration as Cursor IDE - add to Windsurf MCP settings file.
 
 ### 3. Dated Documentation
 **User:** "Update the changelog with today's date"  
-**Result:** Changelog entry with current date: `## [1.1.7] - 2025-08-26`
+**Result:** Changelog entry with current date: `## [Unreleased] - 2026-09-16`
 
 ## API Reference
 
