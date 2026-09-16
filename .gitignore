@@ -117,4 +117,3 @@ config.json
 docs/*
 !docs/v2/
 blogs/
-CLAUDE.md

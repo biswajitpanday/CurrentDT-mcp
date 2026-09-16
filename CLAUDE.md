@@ -1,0 +1,95 @@
+# CLAUDE.md
+
+Guidance for Claude Code when working in this repository. Everything here describes the
+code as it is; if a statement stops being true, fix the statement.
+
+## What this is
+
+`@strix-ai/currentdt-mcp` is an MCP server exposing one tool, `get_current_datetime`,
+over stdio. Published to npm from CI via Trusted Publishing (OIDC) -- there is no npm
+token anywhere. Requires Node 18+.
+
+The v2 plan lives in `docs/v2/` (`ROADMAP.md`, `TOOL-SPEC.md`, `MIGRATION.md`). Read
+`ROADMAP.md` before starting feature work; it says which phase is next and why the
+ordering matters. Nothing in those docs is marked complete until it is merged.
+
+## Commands
+
+```bash
+npm run build        # tsc -> dist/
+npm test             # jest, all suites (unit + integration); must stay green in any TZ
+npm run test:unit
+npm run test:integration
+npm run lint         # eslint "src/**/*.ts"  (keep the quotes -- bash globstar is off on CI)
+npm run type-check   # tsc --noEmit
+npm run dev          # tsx watch src/index.ts
+node dist/index.js --test              # exercise the built package end to end
+node dist/index.js --validate-format "YYYY-MM-DD"
+```
+
+Release: bump `version` in package.json (`npm version patch --no-git-tag-version`) and
+push to `master`. The workflow tests on Node 18/20/22, publishes if the version is new,
+then creates the tag and GitHub release. Do not create the release tag by hand.
+
+## Layout
+
+```
+src/
+├── index.ts                    # CLI entry; owns process lifetime and signal handling
+├── server/
+│   ├── MCPServer.ts            # wires the SDK Server, transport, handlers
+│   ├── RequestHandler.ts       # tools/list, tools/call, prompts stub
+│   └── ToolRegistry.ts         # the get_current_datetime definition + JSON schema
+├── services/
+│   ├── DateTimeService.ts      # resolves options -> provider -> formatted string
+│   └── ConfigurationManager.ts # config file + CURRENTDT_* env overrides
+├── providers/                  # IDateTimeProvider: LocalProvider, RemoteProvider, factory
+├── utils/
+│   ├── DateFormatter.ts        # the only file doing product work: tokens -> string
+│   ├── Validator.ts            # option/format validation
+│   └── Logger.ts               # JSON lines to stderr
+└── types/                      # zod schemas + shared types
+```
+
+## Rules that exist because something broke
+
+1. **stdout is JSON-RPC only.** Every log line goes to stderr (`Logger.ts`). A single
+   stray `console.log` in server mode breaks every client silently.
+2. **Never apply a default at two layers.** The options schema in `MCPTypes.ts` has no
+   `.default()`; defaults resolve in `DateTimeService` from config. A zod default here
+   once made the entire configuration system unreachable for a year.
+3. **`iso` is UTC; token patterns are local time.** `Z`/`ZZ` are real offset tokens.
+   Never put a literal `Z` in a pattern. v2 Phase 1 replaces this with structured
+   output carrying both clocks -- until then, keep the split explicit in any text a
+   model will read.
+4. **A format string must contain a token.** `validateFormat` rejects free text. It
+   used to return `true` for everything, so `"what time is it"` was echoed back as the
+   datetime.
+5. **Look up `DEFAULT_FORMATS` with `hasOwnProperty`.** `format: "constructor"` once
+   resolved through the prototype chain to a function and crashed inside `replace`.
+6. **An explicitly requested provider that fails must throw.** Silent fallback to the
+   local clock only when no provider was named.
+7. **`MCPServer.stop()` must not call `process.exit`.** `index.ts` owns the process;
+   the integration suite instantiates the server and would die otherwise.
+8. **Tests must pass in any timezone.** Derive expected values from the same `Date`
+   rather than hardcoding UTC digits. CI runs Ubuntu (UTC); developers usually don't.
+9. **The version string lives in `package.json` only.** `MCPServer.ts` reads it via
+   `require`. It used to be hardcoded in twelve places.
+10. **Don't document a feature that isn't wired.** The old docs described a cache, a
+    config watcher and a plugin system that existed only in prose. `docs/PRD.md`,
+    `SRS.md`, `Architecture.md`, `TaskList.md`, `TechnicalNotes.md` and `blogs/` are
+    gitignored for that reason; treat them as untrusted if they are on disk.
+
+## Dependencies
+
+- `@modelcontextprotocol/sdk` ^1.30 -- ships dual CJS/ESM. The 0.5 line was ESM-only
+  and the CommonJS build threw `ERR_REQUIRE_ESM` on every Node before 22.12. The CI
+  matrix launches `dist/index.js` on 18/20/22 specifically to catch that class of bug.
+- `zod` ^3 -- schemas only.
+
+## Known gaps (deliberate, tracked in docs/v2/MIGRATION.md)
+
+No `timezone` parameter yet. Logger correlation IDs contaminate across requests (logs
+only). Multi-character tokens like `MMMM` mangle because `MM` matches inside them. The
+default `remote` endpoint (`worldtimeapi.org`) is unreachable, so that provider fails
+loudly out of the box. `examples/test-mcp-integration.js` asserts nothing.
