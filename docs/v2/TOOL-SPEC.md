@@ -16,9 +16,10 @@ its timezone.
 
 ---
 
-## `get_current_datetime` (Phase 1–2)
+## `get_current_datetime` (Phase 1 done, Phase 2 pending)
 
 Extends the existing tool. `format` and `provider` keep their v1.1.8 meaning.
+Phase 1 shipped the output shape below exactly as specified; `timezone` input is Phase 2.
 
 **Input**
 

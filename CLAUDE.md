@@ -9,6 +9,10 @@ code as it is; if a statement stops being true, fix the statement.
 over stdio. Published to npm from CI via Trusted Publishing (OIDC) -- there is no npm
 token anywhere. Requires Node 18+.
 
+Tool errors (bad format, failed provider) are thrown from the handler and become
+`isError` results; the SDK validates arguments against the zod `inputSchema` and
+`structuredContent` against `outputSchema` before anything reaches a client.
+
 The v2 plan lives in `docs/v2/` (`ROADMAP.md`, `TOOL-SPEC.md`, `MIGRATION.md`). Read
 `ROADMAP.md` before starting feature work; it says which phase is next and why the
 ordering matters. Nothing in those docs is marked complete until it is merged.
@@ -37,11 +41,10 @@ then creates the tag and GitHub release. Do not create the release tag by hand.
 src/
 ├── index.ts                    # CLI entry; owns process lifetime and signal handling
 ├── server/
-│   ├── MCPServer.ts            # wires the SDK Server, transport, handlers
-│   ├── RequestHandler.ts       # tools/list, tools/call, prompts stub
-│   └── ToolRegistry.ts         # the get_current_datetime definition + JSON schema
+│   ├── MCPServer.ts            # McpServer + transport; instructions; prompts stub
+│   └── tools.ts                # get_current_datetime: zod input/output schemas, handler
 ├── services/
-│   ├── DateTimeService.ts      # resolves options -> provider -> formatted string
+│   ├── DateTimeService.ts      # resolve(): options -> provider -> DateTimeResult
 │   └── ConfigurationManager.ts # config file + CURRENTDT_* env overrides
 ├── providers/                  # IDateTimeProvider: LocalProvider, RemoteProvider, factory
 ├── utils/
@@ -59,9 +62,9 @@ src/
    `.default()`; defaults resolve in `DateTimeService` from config. A zod default here
    once made the entire configuration system unreachable for a year.
 3. **`iso` is UTC; token patterns are local time.** `Z`/`ZZ` are real offset tokens.
-   Never put a literal `Z` in a pattern. v2 Phase 1 replaces this with structured
-   output carrying both clocks -- until then, keep the split explicit in any text a
-   model will read.
+   Never put a literal `Z` in a pattern. The tool's `structuredContent` states the same
+   instant from every clock (`iso`/`utc`, `local`+`offset`+`timezone`, `epochMs`) so
+   a consumer never has to infer which one a string was -- keep it that way.
 4. **A format string must contain a token.** `validateFormat` rejects free text. It
    used to return `true` for everything, so `"what time is it"` was echoed back as the
    datetime.

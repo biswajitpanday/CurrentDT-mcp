@@ -73,6 +73,39 @@ describe('DateTimeService', () => {
     });
   });
 
+  describe('resolve', () => {
+    it('states the same instant from every clock', async () => {
+      const r = await service.resolve();
+      expect(r.utc).toBe(r.iso);
+      expect(new Date(r.iso).getTime()).toBe(r.epochMs);
+      expect(new Date(r.local).getTime()).toBe(r.epochMs);
+    });
+
+    it('reports the host offset in extended form, never as a bare Z', async () => {
+      const r = await service.resolve();
+      expect(r.offset).toMatch(/^[+-]\d{2}:\d{2}$/);
+      expect(r.offset).toBe(
+        r.offset === '+00:00' ? '+00:00' : r.local.slice(-6)
+      );
+    });
+
+    it('names an IANA timezone', async () => {
+      const r = await service.resolve();
+      expect(r.timezone).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    });
+
+    it('formatted equals what getCurrentDateTime returns for the same options', async () => {
+      const r = await service.resolve({ format: 'YYYY-MM-DD' });
+      expect(r.formatted).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(r.formatted).toBe(r.local.slice(0, 10));
+    });
+
+    it('records which provider answered', async () => {
+      const r = await service.resolve({ provider: 'local' });
+      expect(r.provider).toBe('local');
+    });
+  });
+
   describe('validateFormat', () => {
     it('should validate ISO format', () => {
       expect(service.validateFormat('iso')).toBe(true);

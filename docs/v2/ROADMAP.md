@@ -1,7 +1,7 @@
 # v2 Roadmap
 
 **Branch:** `feat/v2-temporal-context` (branched from `v1.1.8`)
-**Status:** not started — this document is the plan, not a progress report.
+**Status:** Phase 1 implemented on the branch, unmerged. Phases 2–6 not started.
 
 > Keep this directory small. The previous `docs/` tree reached 1,284 lines describing a
 > tool whose irreducible logic is 22 lines, and its checkboxes claimed work that was
@@ -57,7 +57,7 @@ Smoke test in a real Cursor or Claude Desktop instance before publishing: the SD
 bump changes the handshake and no automated test exercises a real client. Then publish
 and observe downloads for a fortnight.
 
-### Phase 1 — Structured output
+### Phase 1 — Structured output *(implemented on branch; not merged, not published)*
 Retire the UTC-vs-local ambiguity instead of documenting around it.
 
 - Migrate to the SDK 1.x `McpServer` / `registerTool` API (the dependency upgrade
@@ -70,6 +70,14 @@ Retire the UTC-vs-local ambiguity instead of documenting around it.
 
 **Done when:** a single `tools/call` response states its own timezone unambiguously,
 and old clients still receive a usable text string.
+
+*Implementation notes:* `src/server/tools.ts` + `DateTimeService.resolve()`.
+`ToolRegistry` and `RequestHandler` are gone — the SDK's `registerTool` does their job.
+The integration suite now drives the real `McpServer` through a `Client` over
+`InMemoryTransport`, so protocol behaviour is tested rather than internal getters.
+**Before release:** the publish workflow runs `npm publish` with no `--tag`, so a
+`2.0.0-*` prerelease would land on `latest` and reach every `npx -y` user. Add a
+dist-tag step (or publish `2.0.0` outright) before bumping the version on this branch.
 
 ### Phase 2 — Timezone support
 Table stakes, not differentiation, but v1 has none at all and `.strict()` currently

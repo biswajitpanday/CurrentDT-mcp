@@ -81,6 +81,19 @@ describe('DateFormatter', () => {
     });
   });
 
+  describe('utcOffset', () => {
+    it('returns +00:00 for a zero offset unless zeroAsZ is requested', () => {
+      const utcOnly = new Date('2025-01-01T00:00:00Z');
+      if (utcOnly.getTimezoneOffset() === 0) {
+        expect(DateFormatter.utcOffset(utcOnly)).toBe('+00:00');
+        expect(DateFormatter.utcOffset(utcOnly, { zeroAsZ: true })).toBe('Z');
+      } else {
+        expect(DateFormatter.utcOffset(utcOnly)).toMatch(/^[+-]\d{2}:\d{2}$/);
+        expect(DateFormatter.utcOffset(utcOnly, { extended: false })).toMatch(/^[+-]\d{4}$/);
+      }
+    });
+  });
+
   describe('validateFormat', () => {
     it('should validate ISO format', () => {
       expect(DateFormatter.validateFormat('iso')).toBe(true);

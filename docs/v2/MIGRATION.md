@@ -45,9 +45,19 @@ Carried into v2 knowingly:
 
 ---
 
-## 1.1.8 → 2.0.0 — planned
+## 1.1.8 → 2.0.0 — in progress on `feat/v2-temporal-context`
 
-Expected to be a major version. Anticipated breaks, to be confirmed as phases land:
+Expected to be a major version. Confirmed so far (Phase 1):
+
+| change | who is affected |
+|---|---|
+| Tool responses carry `structuredContent` conforming to a declared `outputSchema`, alongside the unchanged text content. | Additive. Old clients see the same text string as 1.1.9. |
+| Bad input and provider failures are returned as **`isError` tool results**, not JSON-RPC protocol errors (`-32603`). This is the spec's channel for tool failures and lets the model read the message and retry. | Anyone matching on JSON-RPC error codes. |
+| Unknown argument keys are **ignored** rather than rejected. The 1.x schema was `.strict()`, so a client sending e.g. `timezone` got a hard error; the SDK's schema strips unknown keys. | Relaxes a failure; nothing that worked before breaks. |
+| `provider` is validated against an enum by the SDK before the handler runs; an unknown value is an `isError` result naming the allowed values. | Same outcome as before, better message. |
+| The tool description and server `instructions` now tell the model to call the tool before writing any date. | Behavioural, not API. |
+
+Still anticipated:
 
 1. **Response shape.** Tool responses gain `structuredContent`. The `content` text
    string is retained for older clients, but its exact wording may change — callers

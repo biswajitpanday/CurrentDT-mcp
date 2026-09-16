@@ -9,6 +9,32 @@ export interface DateTimeOptions {
   provider?: string;
 }
 
+/**
+ * One instant, stated from every clock a caller might mean. Returned as the tool's
+ * structuredContent so no consumer has to infer whether a string was UTC or local --
+ * the ambiguity that produced v1's wrong timestamps.
+ */
+// A type alias, not an interface, on purpose: the SDK types structuredContent as
+// `{ [x: string]: unknown }`, and only aliases get TypeScript's implicit index signature.
+export type DateTimeResult = {
+  /** The caller's requested `format`, rendered exactly as v1 returned it. */
+  formatted: string;
+  /** The instant as an ISO 8601 UTC string. Canonical machine value. */
+  iso: string;
+  /** The UTC clock reading. Identical to `iso` until a timezone parameter exists. */
+  utc: string;
+  /** The host-local clock reading as ISO 8601 with its real offset, e.g. ...+02:00. */
+  local: string;
+  /** Host UTC offset in extended form: "+02:00", "-05:30", "+00:00". */
+  offset: string;
+  /** IANA zone the `local` and `offset` fields are stated in, e.g. "Europe/Berlin". */
+  timezone: string;
+  /** Milliseconds since the Unix epoch. */
+  epochMs: number;
+  /** Which provider actually answered -- may differ from the one requested on fallback. */
+  provider: string;
+};
+
 export const STANDARD_FORMAT_TOKENS = {
   YYYY: '4-digit year',
   MM: '2-digit month',

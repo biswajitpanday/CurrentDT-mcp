@@ -1,16 +1,11 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { 
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { ListPromptsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 import { DateTimeService } from '../services/DateTimeService';
 import { ConfigurationManager } from '../services/ConfigurationManager';
-import { ToolRegistry, GET_CURRENT_DATETIME_TOOL } from './ToolRegistry';
-import { RequestHandler } from './RequestHandler';
+import { registerDateTimeTools } from './tools';
 import { Logger } from '../utils/Logger';
 
 // Single source of truth for the version reported in the MCP handshake. Hardcoding it
@@ -18,105 +13,78 @@ import { Logger } from '../utils/Logger';
 const { version: SERVER_VERSION } = require('../../package.json');
 const SERVER_NAME = '@strix-ai/currentdt-mcp';
 
+// Sent to the client on initialize. Static text only: a date placed here at startup
+// would go stale across midnight in a long-lived session, which is exactly the class
+// of silent wrong data v1 shipped. Always-fresh date context is Phase 3 (resources).
+const INSTRUCTIONS =
+  'This server provides the current date and time. Your training data predates today, so ' +
+  'never guess a date -- call get_current_datetime before writing any date, timestamp, year, ' +
+  'changelog entry, migration filename or copyright line. Read the structuredContent of the ' +
+  'result: `iso` and `utc` are UTC; `local`, `offset` and `timezone` describe the host clock.';
+
 export class MCPServer {
-  private server: Server;
+  private server: McpServer;
   private dateTimeService: DateTimeService;
   private configManager: ConfigurationManager;
-  private toolRegistry: ToolRegistry;
-  private requestHandler: RequestHandler;
   private logger: Logger;
 
   constructor() {
     this.logger = Logger.getInstance();
-    
-    // Set quiet mode for MCP server (only errors to stderr)
-    // This prevents logs from interfering with JSON-RPC on stdout
-    this.logger.setLogLevel('error');
-    
-    this.configManager = ConfigurationManager.getInstance();
-    this.toolRegistry = new ToolRegistry();
-    
-    // Initialize services with configuration
-    const config = this.configManager.getConfig();
-    this.dateTimeService = new DateTimeService(config);
-    this.requestHandler = new RequestHandler(this.dateTimeService, this.toolRegistry);
 
-    // Create MCP server
-    this.server = new Server(
+    // Quiet by default: stdout is JSON-RPC, and anything above error on stderr is
+    // noise in a client's log pane. CURRENTDT_DEBUG re-raises the level after config
+    // loads (DateTimeService.updateConfiguration).
+    this.logger.setLogLevel('error');
+
+    this.configManager = ConfigurationManager.getInstance();
+    this.dateTimeService = new DateTimeService(this.configManager.getConfig());
+
+    this.server = new McpServer(
+      { name: SERVER_NAME, version: SERVER_VERSION },
       {
-        name: SERVER_NAME,
-        version: SERVER_VERSION,
-      },
-      {
-        capabilities: {
-          tools: {},
-          prompts: {},
-        },
+        instructions: INSTRUCTIONS,
+        // Advertised explicitly even though no prompt is registered yet: some clients
+        // call prompts/list unconditionally on connect and surface a -32601 as an error.
+        capabilities: { prompts: {} },
       }
     );
 
-    this.setupHandlers();
-    this.registerTools();
+    registerDateTimeTools(this.server, this.dateTimeService);
+
+    // Empty prompt list for the clients described above. Phase 3 registers a real
+    // prompt through McpServer, which owns this handler from then on -- remove this
+    // block at that point, or McpServer will refuse to set its own.
+    this.server.server.setRequestHandler(ListPromptsRequestSchema, async () => ({ prompts: [] }));
   }
 
-  private setupHandlers(): void {
-    // Handle tool listing
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      return await this.requestHandler.handleListTools();
-    });
+  /**
+   * Load configuration and attach the given transport. Separated from start() so the
+   * integration suite can drive the server over an in-memory transport.
+   */
+  async connect(transport: Transport): Promise<void> {
+    // Config loads asynchronously, so the constructor only ever saw defaults. Without
+    // this push the config file and every CURRENTDT_* variable are silently ignored.
+    await this.configManager.loadConfig();
+    this.dateTimeService.updateConfiguration(this.configManager.getConfig());
 
-    // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      return await this.requestHandler.handleToolCall(request);
-    });
+    await this.server.connect(transport);
 
-    // Handle prompts listing (required for Cursor compatibility)
-    this.server.setRequestHandler(ListPromptsRequestSchema, async () => {
-      return await this.requestHandler.handleListPrompts();
-    });
-
-    // Handle prompt requests (required for Cursor compatibility)
-    this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-      return await this.requestHandler.handleGetPrompt(request);
-    });
-
-    this.logger.debug('MCP server handlers configured');
-  }
-
-  private registerTools(): void {
-    this.toolRegistry.register(GET_CURRENT_DATETIME_TOOL);
-    
-    this.logger.info('Tools registered', { 
-      toolCount: this.toolRegistry.getAll().length,
-      tools: this.toolRegistry.getAll().map(t => t.name)
+    this.logger.info('MCP server connected', {
+      name: SERVER_NAME,
+      version: SERVER_VERSION,
+      transport: transport.constructor.name,
     });
   }
 
+  /** Production entry point: stdio. Throws on failure; src/index.ts decides the exit. */
   async start(): Promise<void> {
     try {
-      // Load configuration, then push it into the service. The constructor can only see
-      // defaults because loadConfig is async; without this the config file and every
-      // CURRENTDT_* variable are silently ignored for the whole process lifetime.
-      await this.configManager.loadConfig();
-      this.dateTimeService.updateConfiguration(this.configManager.getConfig());
-
-      // Create transport and connect
-      const transport = new StdioServerTransport();
-      await this.server.connect(transport);
-
-      this.logger.info('MCP server started successfully', {
-        name: SERVER_NAME,
-        version: SERVER_VERSION,
-        capabilities: ['tools', 'prompts'],
-        toolCount: this.toolRegistry.getAll().length
-      });
-
+      await this.connect(new StdioServerTransport());
     } catch (error) {
       this.logger.fatal('Failed to start MCP server', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        stack: error instanceof Error ? error.stack : undefined,
       });
-
       throw error;
     }
   }
@@ -131,15 +99,7 @@ export class MCPServer {
     this.logger.info('MCP server stopped gracefully');
   }
 
-  getServer(): Server {
-    return this.server;
-  }
-
   getDateTimeService(): DateTimeService {
     return this.dateTimeService;
-  }
-
-  getToolRegistry(): ToolRegistry {
-    return this.toolRegistry;
   }
 }

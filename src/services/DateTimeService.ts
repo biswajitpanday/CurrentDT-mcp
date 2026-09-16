@@ -1,4 +1,4 @@
-import { IDateTimeService, DateTimeOptions } from '../types/DateTimeTypes';
+import { IDateTimeService, DateTimeOptions, DateTimeResult } from '../types/DateTimeTypes';
 import { ProviderFactory } from '../providers/ProviderFactory';
 import { DateFormatter } from '../utils/DateFormatter';
 import { Validator } from '../utils/Validator';
@@ -23,7 +23,17 @@ export class DateTimeService implements IDateTimeService {
     }
   }
 
+  /** The requested format only. Kept for the CLI and for callers that want v1's string. */
   async getCurrentDateTime(options?: DateTimeOptions): Promise<string> {
+    return (await this.resolve(options)).formatted;
+  }
+
+  /**
+   * The current instant stated from every clock at once. This is what the MCP tool
+   * returns as structuredContent, so a consumer never has to guess whether a value
+   * was UTC or local.
+   */
+  async resolve(options?: DateTimeOptions): Promise<DateTimeResult> {
     const correlationId = `dt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.logger.setCorrelationId(correlationId);
 
@@ -71,6 +81,9 @@ export class DateTimeService implements IDateTimeService {
 
       // Get datetime from provider with fallback
       let currentDate: Date;
+      // Which clock actually answered. On fallback this differs from providerName,
+      // and the result says so rather than letting the caller assume.
+      let answeredBy = providerName;
       try {
         const provider = this.providerFactory.create(providerName, this.config);
         currentDate = await provider.getCurrentDateTime();
@@ -101,6 +114,7 @@ export class DateTimeService implements IDateTimeService {
         try {
           const fallbackProvider = await this.providerFactory.getAvailableProvider(['local']);
           currentDate = await fallbackProvider.getCurrentDateTime();
+          answeredBy = fallbackProvider.getName();
           
           this.logger.info('Successfully used fallback provider', {
             fallbackProvider: fallbackProvider.getName(),
@@ -126,6 +140,17 @@ export class DateTimeService implements IDateTimeService {
 
       // Format the datetime
       const formattedDateTime = DateFormatter.format(currentDate, format);
+      const iso = currentDate.toISOString();
+      const result: DateTimeResult = {
+        formatted: formattedDateTime,
+        iso,
+        utc: iso,
+        local: DateFormatter.format(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        offset: DateFormatter.utcOffset(currentDate),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        epochMs: currentDate.getTime(),
+        provider: answeredBy,
+      };
 
       this.logger.debug('DateTime request completed successfully', {
         format,
@@ -134,7 +159,7 @@ export class DateTimeService implements IDateTimeService {
         correlationId
       });
 
-      return formattedDateTime;
+      return result;
 
     } catch (error) {
       this.logger.error('DateTime service request failed', {

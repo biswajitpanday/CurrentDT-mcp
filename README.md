@@ -171,7 +171,24 @@ and use `"command": "currentdt-mcp"` with no `args` in any of the configs above.
 - `format` (optional): `"iso"` (default) or custom format like `"YYYY-MM-DD HH:mm:ss"`
 - `provider` (optional): `"local"` (default) or `"remote"`
 
-**Returns:** Formatted datetime string
+**Returns:** the formatted string as text content, plus `structuredContent` stating the
+same instant from every clock -- so there is never any doubt whether a value is UTC or local:
+
+```json
+{
+  "formatted": "2026-09-16 16:01:08",
+  "iso":       "2026-09-16T14:01:08.624Z",
+  "utc":       "2026-09-16T14:01:08.624Z",
+  "local":     "2026-09-16T16:01:08.624+02:00",
+  "offset":    "+02:00",
+  "timezone":  "Europe/Berlin",
+  "epochMs":   1789567268624,
+  "provider":  "local"
+}
+```
+
+Invalid input (a token-less `format`, a failed provider) comes back as a tool error
+(`isError: true`) with a message written to be read by the model.
 
 **Example:**
 ```json

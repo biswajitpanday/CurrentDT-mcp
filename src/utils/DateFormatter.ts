@@ -57,9 +57,10 @@ export class DateFormatter {
         case 'SSS':
           return date.getMilliseconds().toString().padStart(3, '0');
         case 'Z':
-          return this.getOffset(date, true);
+          // ISO 8601 permits 'Z' for a zero offset, so a UTC host still emits valid ISO.
+          return this.utcOffset(date, { extended: true, zeroAsZ: true });
         case 'ZZ':
-          return this.getOffset(date, false);
+          return this.utcOffset(date, { extended: false });
         default:
           return token;
       }
@@ -67,16 +68,17 @@ export class DateFormatter {
   }
 
   /**
-   * Renders the real UTC offset of the local time the other tokens are rendered in.
-   * Token formats use local-time getters, so a literal 'Z' would label local digits
-   * as UTC. Emitting the true offset keeps the output honest.
+   * The host's UTC offset for `date`, e.g. "+02:00" (extended) or "+0200" (basic).
+   * Token formats render local time, so a literal 'Z' would label local digits as
+   * UTC; emitting the true offset is what keeps the output honest. `zeroAsZ` is for
+   * the Z token only -- a standalone offset field should read "+00:00", not "Z".
    */
-  private static getOffset(date: Date, extended: boolean): string {
+  static utcOffset(date: Date, opts: { extended?: boolean; zeroAsZ?: boolean } = {}): string {
+    const { extended = true, zeroAsZ = false } = opts;
     const totalMinutes = -date.getTimezoneOffset();
 
-    if (totalMinutes === 0) {
-      // ISO 8601 permits 'Z' for a zero offset, so a UTC host still emits valid ISO.
-      return extended ? 'Z' : '+0000';
+    if (totalMinutes === 0 && zeroAsZ) {
+      return 'Z';
     }
 
     const sign = totalMinutes < 0 ? '-' : '+';
