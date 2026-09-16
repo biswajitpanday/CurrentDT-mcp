@@ -16,5 +16,5 @@
     }
   },
   "debug": false,
-  "logLevel": "info"
+  "logLevel": "error"
 }

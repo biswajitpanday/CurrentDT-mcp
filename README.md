@@ -255,7 +255,7 @@ Create `currentdt-config.json` for custom settings:
     }
   },
   "debug": false,
-  "logLevel": "info"
+  "logLevel": "error"
 }
 ```
 

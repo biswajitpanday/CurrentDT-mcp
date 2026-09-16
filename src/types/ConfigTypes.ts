@@ -16,7 +16,9 @@ export const ConfigurationSchema = z.object({
     },
   }),
   debug: z.boolean().default(false),
-  logLevel: z.enum(['debug', 'info', 'warn', 'error', 'fatal']).default('info'),
+  // 'error', not 'info': the server sets the logger to error at construction, and a
+  // louder schema default would silently override that once config loads.
+  logLevel: z.enum(['debug', 'info', 'warn', 'error', 'fatal']).default('error'),
 });
 
 export type Configuration = z.infer<typeof ConfigurationSchema>;

@@ -1,6 +1,6 @@
 {
   "name": "@strix-ai/currentdt-mcp",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Current DateTime MCP Server - Provide real-time date and time to AI assistants via Model Context Protocol",
   "author": {
     "name": "Biswajit Panday",
@@ -14,14 +14,22 @@
     }
   ],
   "license": "MIT",
+  "mcpName": "io.github.biswajitpanday/currentdt-mcp",
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
+    "time",
+    "date",
     "datetime",
+    "timezone",
+    "clock",
+    "utc",
+    "dst",
+    "iso8601",
     "ai-assistant",
-    "cursor",
     "claude",
-    "typescript"
+    "cursor"
   ],
   "repository": {
     "type": "git",

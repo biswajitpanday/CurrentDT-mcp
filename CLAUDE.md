@@ -33,8 +33,12 @@ node dist/index.js --validate-format "YYYY-MM-DD"
 ```
 
 Release: bump `version` in package.json (`npm version patch --no-git-tag-version`) and
-push to `master`. The workflow tests on Node 18/20/22, publishes if the version is new,
-then creates the tag and GitHub release. Do not create the release tag by hand.
+push to `master`. The workflow tests on Node 18/20/22, publishes to npm if the version
+is new, creates the tag and GitHub release, then publishes to the MCP Registry (OIDC,
+no secret; it syncs `server.json`'s version from package.json). Do not create the
+release tag by hand. `package.json` `mcpName` must equal `server.json` `name` -- the
+registry reads it from the published npm tarball to prove ownership. `smithery.yaml`
+is the Smithery listing; it just runs `npx -y` and needs no changes per release.
 
 ## Layout
 

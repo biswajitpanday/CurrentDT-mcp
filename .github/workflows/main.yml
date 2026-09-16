@@ -143,12 +143,33 @@ jobs:
           } > release-notes.md
           gh release create "v$VERSION" --title "🚀 Release v$VERSION" --notes-file release-notes.md
 
+      - name: 🗂️ Publish to MCP Registry
+        if: steps.version-check.outputs.publish == 'true'
+        # Same zero-secret model as npm: OIDC proves this workflow runs in the
+        # biswajitpanday/CurrentDT-mcp repo, which grants io.github.biswajitpanday/*.
+        # The registry verifies ownership by reading `mcpName` from the *published*
+        # npm package, so wait for the registry CDN to serve the new version first.
+        run: |
+          VERSION="${{ steps.version-check.outputs.version }}"
+          for i in $(seq 1 24); do
+            if [ "$(npm view @strix-ai/currentdt-mcp@$VERSION mcpName 2>/dev/null)" = "io.github.biswajitpanday/currentdt-mcp" ]; then
+              echo "npm serves $VERSION with mcpName"; break
+            fi
+            echo "waiting for npm to serve $VERSION ($i/24)"; sleep 5
+          done
+          curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' server.json > server.tmp && mv server.tmp server.json
+          ./mcp-publisher validate
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+
       - name: ✅ Success Notification
         if: steps.version-check.outputs.publish == 'true'
         run: |
           echo "🎉 Published @strix-ai/currentdt-mcp@${{ steps.version-check.outputs.version }} to NPM"
           echo "📦 https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
           echo "🏷️ https://github.com/biswajitpanday/CurrentDT-mcp/releases/tag/v${{ steps.version-check.outputs.version }}"
+          echo "🗂️ https://registry.modelcontextprotocol.io/v0/servers?search=io.github.biswajitpanday/currentdt-mcp"
 
       - name: 📝 No Publish Notification
         if: steps.version-check.outputs.publish == 'false'
