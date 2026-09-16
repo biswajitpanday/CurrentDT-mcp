@@ -117,3 +117,7 @@ config.json
 docs/*
 !docs/v2/
 blogs/
+
+# MCPB bundle build output (scripts/build-mcpb.js)
+mcpb-build/
+*.mcpb

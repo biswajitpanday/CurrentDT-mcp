@@ -37,8 +37,14 @@ push to `master`. The workflow tests on Node 18/20/22, publishes to npm if the v
 is new, creates the tag and GitHub release, then publishes to the MCP Registry (OIDC,
 no secret; it syncs `server.json`'s version from package.json). Do not create the
 release tag by hand. `package.json` `mcpName` must equal `server.json` `name` -- the
-registry reads it from the published npm tarball to prove ownership. `smithery.yaml`
-is the Smithery listing; it just runs `npx -y` and needs no changes per release.
+registry reads it from the published npm tarball to prove ownership.
+
+The workflow also builds `currentdt-mcp.mcpb` (`npm run build:mcpb`, `manifest.json`
++ `scripts/build-mcpb.js`) and attaches it to the GitHub release: one-click install for
+Claude Desktop, and the artifact Smithery distributes for local servers (Smithery no
+longer reads `smithery.yaml`; its listing is a manual upload of this bundle). The build
+script launches the staged server before packing, so a bundle that cannot start is
+never published.
 
 ## Layout
 

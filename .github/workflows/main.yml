@@ -139,9 +139,21 @@ jobs:
             echo '```'
             echo
             echo "**Package:** https://www.npmjs.com/package/@strix-ai/currentdt-mcp"
+            echo "**Claude Desktop:** download \`currentdt-mcp.mcpb\` below and open it."
             echo "**Changes:** see the commit history for this tag."
           } > release-notes.md
           gh release create "v$VERSION" --title "🚀 Release v$VERSION" --notes-file release-notes.md
+
+      - name: 📦 Build MCPB bundle and attach to the release
+        if: steps.version-check.outputs.publish == 'true'
+        # One-click install for Claude Desktop, and the artifact Smithery distributes
+        # for local servers. The build script launches the staged server before
+        # packing, so a bundle that cannot start never reaches the release page.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run build:mcpb
+          gh release upload "v${{ steps.version-check.outputs.version }}" currentdt-mcp.mcpb --clobber
 
       - name: 🗂️ Publish to MCP Registry
         if: steps.version-check.outputs.publish == 'true'

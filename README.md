@@ -105,7 +105,11 @@ Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` in a project:
 
 ### Claude Desktop
 
-Edit `claude_desktop_config.json` -- on macOS at
+**One-click:** download `currentdt-mcp.mcpb` from the
+[latest release](https://github.com/biswajitpanday/CurrentDT-mcp/releases/latest) and
+open it -- Claude Desktop installs it as an extension. No Node, npm or config file needed.
+
+**Or by config:** edit `claude_desktop_config.json` -- on macOS at
 `~/Library/Application Support/Claude/`, on Windows at `%APPDATA%\Claude\`:
 ```json
 {

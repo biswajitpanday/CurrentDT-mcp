@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "currentdt-mcp",
+  "display_name": "CurrentDT",
+  "version": "2.0.2",
+  "description": "Current date and time, never ambiguous about timezone. Any IANA zone, DST-correct conversion.",
+  "long_description": "Gives the assistant a clock it cannot guess wrong.\n\n**get_current_datetime** returns the same instant from every clock at once -- ISO UTC, local time with its real offset, the IANA zone, and epoch milliseconds -- so there is never any doubt which one a value came from. Any timezone on request.\n\n**convert_timezone** re-states a time in another zone, correct for daylight saving on the date in question, and flags the hour either side of a changeover where a guessed offset is most likely wrong.\n\nNo configuration, no network, no account. Runs entirely on your machine.",
+  "author": {
+    "name": "Biswajit Panday",
+    "url": "https://biswajitpanday.github.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/biswajitpanday/CurrentDT-mcp"
+  },
+  "homepage": "https://github.com/biswajitpanday/CurrentDT-mcp",
+  "documentation": "https://github.com/biswajitpanday/CurrentDT-mcp#readme",
+  "support": "https://github.com/biswajitpanday/CurrentDT-mcp/issues",
+  "license": "MIT",
+  "keywords": ["time", "date", "datetime", "timezone", "clock", "utc", "dst", "iso8601"],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "get_current_datetime",
+      "description": "The current date and time as UTC, local with offset, IANA zone and epoch, in any timezone."
+    },
+    {
+      "name": "convert_timezone",
+      "description": "Convert a time between IANA timezones, DST-correct for the date, flagging changeover hours."
+    }
+  ],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}
