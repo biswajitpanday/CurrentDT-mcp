@@ -45,9 +45,9 @@ Carried into v2 knowingly:
 
 ---
 
-## 1.1.8 → 2.0.0 — in progress on `feat/v2-temporal-context`
+## 1.1.9 → 2.0.0 — shipped
 
-Expected to be a major version. Confirmed so far (Phase 1):
+Major version. What changed:
 
 | change | who is affected |
 |---|---|
@@ -56,8 +56,12 @@ Expected to be a major version. Confirmed so far (Phase 1):
 | Unknown argument keys are **ignored** rather than rejected. The 1.x schema was `.strict()`, so a client sending e.g. `timezone` got a hard error; the SDK's schema strips unknown keys. | Relaxes a failure; nothing that worked before breaks. |
 | `provider` is validated against an enum by the SDK before the handler runs; an unknown value is an `isError` result naming the allowed values. | Same outcome as before, better message. |
 | The tool description and server `instructions` now tell the model to call the tool before writing any date. | Behavioural, not API. |
+| New optional `timezone` argument (IANA) on `get_current_datetime`. Token formats and the `local`/`offset`/`timezone` fields render in it; `iso`/`utc` stay UTC. | Additive. |
+| New tool `convert_timezone`. | Additive. |
+| Token formats now render through `Intl` for every zone, host included. | Output for the host zone is byte-identical to 1.1.9; verified by the unchanged formatter tests. |
+| `engines` unchanged at `>=18`. `Intl` with IANA zones needs full ICU, which official Node builds ship. | Custom `small-icu` builds would fail on non-UTC zones -- not a supported target. |
 
-Still anticipated:
+Still anticipated for later releases:
 
 1. **Response shape.** Tool responses gain `structuredContent`. The `content` text
    string is retained for older clients, but its exact wording may change — callers

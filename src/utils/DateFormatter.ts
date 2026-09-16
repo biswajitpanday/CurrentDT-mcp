@@ -1,11 +1,17 @@
 import { DEFAULT_FORMATS, STANDARD_FORMAT_TOKENS } from '../types/DateTimeTypes';
 import { DateTimeError } from '../types/MCPTypes';
+import { hostTimeZone, zonedParts, offsetMinutes, formatOffset } from './TimeZone';
 
 export class DateFormatter {
   // ZZ must precede Z, and SSS must precede ss, so the longer token wins the match.
   private static readonly FORMAT_REGEX = /YYYY|MM|DD|HH|mm|SSS|ss|ZZ|Z/g;
 
-  static format(date: Date, format: string = 'iso'): string {
+  /**
+   * `timeZone` is an IANA name; token patterns render the wall clock in that zone.
+   * Omitted, it is the host zone -- the same result the old local-time getters gave,
+   * now through the one code path that every zone uses.
+   */
+  static format(date: Date, format: string = 'iso', timeZone: string = hostTimeZone()): string {
     if (!date || isNaN(date.getTime())) {
       throw new DateTimeError('Invalid date provided for formatting');
     }
@@ -18,7 +24,7 @@ export class DateFormatter {
     // "constructor", "toString" and friends cannot resolve to a function.
     const predefinedFormat = this.getPredefinedFormat(format);
     if (predefinedFormat) {
-      return this.formatWithTokens(date, predefinedFormat);
+      return this.formatWithTokens(date, predefinedFormat, timeZone);
     }
 
     if (!this.validateFormat(format)) {
@@ -30,7 +36,7 @@ export class DateFormatter {
       );
     }
 
-    return this.formatWithTokens(date, format);
+    return this.formatWithTokens(date, format, timeZone);
   }
 
   private static getPredefinedFormat(format: string): string | undefined {
@@ -39,28 +45,29 @@ export class DateFormatter {
       : undefined;
   }
 
-  private static formatWithTokens(date: Date, formatString: string): string {
+  private static formatWithTokens(date: Date, formatString: string, timeZone: string): string {
+    const p = zonedParts(date, timeZone);
     return formatString.replace(this.FORMAT_REGEX, (token) => {
       switch (token) {
         case 'YYYY':
-          return date.getFullYear().toString();
+          return String(p.year);
         case 'MM':
-          return (date.getMonth() + 1).toString().padStart(2, '0');
+          return String(p.month).padStart(2, '0');
         case 'DD':
-          return date.getDate().toString().padStart(2, '0');
+          return String(p.day).padStart(2, '0');
         case 'HH':
-          return date.getHours().toString().padStart(2, '0');
+          return String(p.hour).padStart(2, '0');
         case 'mm':
-          return date.getMinutes().toString().padStart(2, '0');
+          return String(p.minute).padStart(2, '0');
         case 'ss':
-          return date.getSeconds().toString().padStart(2, '0');
+          return String(p.second).padStart(2, '0');
         case 'SSS':
-          return date.getMilliseconds().toString().padStart(3, '0');
+          return String(p.millisecond).padStart(3, '0');
         case 'Z':
-          // ISO 8601 permits 'Z' for a zero offset, so a UTC host still emits valid ISO.
-          return this.utcOffset(date, { extended: true, zeroAsZ: true });
+          // ISO 8601 permits 'Z' for a zero offset, so a UTC zone still emits valid ISO.
+          return this.utcOffset(date, { extended: true, zeroAsZ: true }, timeZone);
         case 'ZZ':
-          return this.utcOffset(date, { extended: false });
+          return this.utcOffset(date, { extended: false }, timeZone);
         default:
           return token;
       }
@@ -73,22 +80,12 @@ export class DateFormatter {
    * UTC; emitting the true offset is what keeps the output honest. `zeroAsZ` is for
    * the Z token only -- a standalone offset field should read "+00:00", not "Z".
    */
-  static utcOffset(date: Date, opts: { extended?: boolean; zeroAsZ?: boolean } = {}): string {
-    const { extended = true, zeroAsZ = false } = opts;
-    const totalMinutes = -date.getTimezoneOffset();
-
-    if (totalMinutes === 0 && zeroAsZ) {
-      return 'Z';
-    }
-
-    const sign = totalMinutes < 0 ? '-' : '+';
-    const abs = Math.abs(totalMinutes);
-    const hours = Math.floor(abs / 60)
-      .toString()
-      .padStart(2, '0');
-    const minutes = (abs % 60).toString().padStart(2, '0');
-
-    return extended ? `${sign}${hours}:${minutes}` : `${sign}${hours}${minutes}`;
+  static utcOffset(
+    date: Date,
+    opts: { extended?: boolean; zeroAsZ?: boolean } = {},
+    timeZone: string = hostTimeZone()
+  ): string {
+    return formatOffset(offsetMinutes(date, timeZone), opts);
   }
 
   static validateFormat(format: string): boolean {

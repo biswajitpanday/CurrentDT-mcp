@@ -68,11 +68,14 @@ Requires **Node.js 18 or newer**.
 
 ## Core Features
 
-- **Zero Configuration** - Works immediately after installation
-- **Multiple Formats** - ISO 8601, custom formats (YYYY-MM-DD, MM/DD/YYYY, etc.)
-- **Provider System** - Local system clock with remote fallback
+- **Never ambiguous about timezone** - every response states the same instant as UTC,
+  as local time with its real offset, and as epoch milliseconds
+- **Any IANA timezone** - `timezone: "Asia/Tokyo"` on the current time, and a
+  `convert_timezone` tool that is DST-correct for the date in question
+- **Multiple Formats** - ISO 8601, named patterns, token patterns (`YYYY-MM-DD HH:mm Z`)
+- **Structured output** - `structuredContent` with a declared schema, plus plain text for older clients
+- **Zero Configuration** - `npx -y` and go; Node 18+
 - **MCP Compatible** - Cursor, Claude Desktop, VS Code, Windsurf
-- **TypeScript Native** - Full type safety and IntelliSense
 
 ## MCP Client Integration
 
@@ -168,7 +171,10 @@ and use `"command": "currentdt-mcp"` with no `args` in any of the configs above.
 ### Tool: `get_current_datetime`
 
 **Parameters:**
-- `format` (optional): `"iso"` (default) or custom format like `"YYYY-MM-DD HH:mm:ss"`
+- `format` (optional): `"iso"` (default) or a token pattern like `"YYYY-MM-DD HH:mm:ss"`
+- `timezone` (optional): IANA name, e.g. `"Asia/Tokyo"`. Sets the zone for `local`,
+  `offset`, `timezone` and any token format. Defaults to the host's zone. `iso`/`utc`
+  are always UTC regardless.
 - `provider` (optional): `"local"` (default) or `"remote"`
 
 **Returns:** the formatted string as text content, plus `structuredContent` stating the
@@ -187,8 +193,36 @@ same instant from every clock -- so there is never any doubt whether a value is 
 }
 ```
 
-Invalid input (a token-less `format`, a failed provider) comes back as a tool error
-(`isError: true`) with a message written to be read by the model.
+Invalid input (a token-less `format`, an unknown `timezone`, a failed provider) comes
+back as a tool error (`isError: true`) with a message written to be read by the model.
+
+### Tool: `convert_timezone`
+
+Re-states a time in another zone, DST-correct for the date -- the case where a
+remembered offset is most likely wrong.
+
+**Parameters:**
+- `time` (required): ISO 8601. With an offset (`"2026-03-29T01:30:00+01:00"`, `"...Z"`)
+  it pins an instant. Without one it is a wall-clock reading and `from` is required.
+- `from` (optional): IANA zone the wall-clock `time` was read in.
+- `to` (required): IANA zone to convert into.
+- `format` (optional): token pattern for the text result, rendered in `to`.
+
+**Returns:** the same structured shape as above (minus `provider`), plus `from` and
+`dstTransition` -- `true` when the instant is within an hour of a DST changeover in `to`.
+
+```json
+{
+  "tool": "convert_timezone",
+  "arguments": { "time": "2026-07-15T09:00:00", "from": "America/New_York", "to": "Europe/Berlin" }
+}
+```
+Result: `local: "2026-07-15T15:00:00.000+02:00"`. The same call for a January date yields
+`+01:00`, because the offset follows the calendar, not a constant.
+
+A wall-clock time that never exists (the spring-forward gap) resolves to the instant
+after the gap; one that exists twice (the autumn repeat) resolves to the first. An
+offset-less `time` with no `from` is refused rather than guessed.
 
 **Example:**
 ```json
@@ -230,11 +264,11 @@ Environment variables override the file: `CURRENTDT_FORMAT`, `CURRENTDT_PROVIDER
 
 ## Common Format Patterns
 
-> **Timezone:** `"iso"` returns **UTC**. Every token pattern renders the host machine's
-> **local** time. Add the `Z` token to emit the real UTC offset -- never write a literal
-> `Z` into a pattern, since that would label local digits as UTC.
+> **Timezone:** `"iso"` returns **UTC**. Every token pattern renders the wall clock in
+> `timezone` (default: the host's zone). Add the `Z` token to emit the real UTC offset --
+> never write a literal `Z` into a pattern, since that would label local digits as UTC.
 
-For a host at UTC+02:00, at the instant `2025-08-26T14:30:00.123Z`:
+For `timezone: "Europe/Berlin"` (UTC+02:00 in summer), at the instant `2025-08-26T14:30:00.123Z`:
 
 | format | output | zone |
 |---|---|---|

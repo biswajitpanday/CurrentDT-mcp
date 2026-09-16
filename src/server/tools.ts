@@ -5,6 +5,9 @@ import { DEFAULT_FORMATS, STANDARD_FORMAT_TOKENS } from '../types/DateTimeTypes'
 import { Logger } from '../utils/Logger';
 
 export const GET_CURRENT_DATETIME = 'get_current_datetime';
+export const CONVERT_TIMEZONE = 'convert_timezone';
+
+const TIMEZONE_HINT = 'IANA name such as "UTC", "Europe/Berlin", "America/New_York" or "Asia/Kolkata".';
 
 // No .default() on either field -- see CLAUDE.md rule 2. A default applied here is
 // indistinguishable from a caller-supplied value and would mask the configured one.
@@ -27,6 +30,31 @@ export const getCurrentDateTimeInput = {
       '"local" (default) reads the system clock. "remote" queries a network time service and ' +
         'fails rather than silently substituting the local clock.'
     ),
+  timezone: z
+    .string()
+    .optional()
+    .describe(
+      `Zone for \`local\`, \`offset\`, \`timezone\` and any token format. ${TIMEZONE_HINT} ` +
+        "Defaults to the host machine's zone. Does not affect `iso`/`utc`, which are always UTC."
+    ),
+};
+
+export const convertTimezoneInput = {
+  time: z
+    .string()
+    .describe(
+      'ISO 8601. With an offset ("2026-03-29T01:30:00+01:00", "...Z") it pins an instant. Without one ' +
+        '("2026-03-29T01:30:00") it is a wall-clock reading and `from` is required.'
+    ),
+  from: z
+    .string()
+    .optional()
+    .describe(`Zone the wall-clock \`time\` was read in. Required when \`time\` has no offset. ${TIMEZONE_HINT}`),
+  to: z.string().describe(`Zone to convert into. ${TIMEZONE_HINT}`),
+  format: z
+    .string()
+    .optional()
+    .describe('Token pattern for `formatted`, rendered in `to`. Defaults to ISO with offset.'),
 };
 
 export const getCurrentDateTimeOutput = {
@@ -38,6 +66,17 @@ export const getCurrentDateTimeOutput = {
   timezone: z.string().describe('IANA zone that `local` and `offset` are stated in, e.g. "Europe/Berlin".'),
   epochMs: z.number().int().describe('Milliseconds since the Unix epoch.'),
   provider: z.string().describe('Which provider actually answered. Differs from the request only on fallback.'),
+};
+
+const { provider: _unused, ...describeOutput } = getCurrentDateTimeOutput;
+export const convertTimezoneOutput = {
+  ...describeOutput,
+  from: z.string().describe('Zone the input was interpreted in: `from`, or "offset in input".'),
+  dstTransition: z
+    .boolean()
+    .describe(
+      'True when the instant is within an hour of a DST changeover in `to` -- the case where a guessed offset is most likely wrong. Trust `local` and `offset` over any assumption.'
+    ),
 };
 
 export function registerDateTimeTools(server: McpServer, service: DateTimeService): void {
@@ -72,6 +111,35 @@ export function registerDateTimeTools(server: McpServer, service: DateTimeServic
       // written to be read by the model, so they surface as-is.
       const result = await service.resolve(args);
 
+      return {
+        content: [{ type: 'text', text: result.formatted }],
+        structuredContent: result,
+      };
+    }
+  );
+
+  server.registerTool(
+    CONVERT_TIMEZONE,
+    {
+      title: 'Convert a time between timezones',
+      description:
+        'Re-state a time in another timezone, DST-correct for the date in question. Use this ' +
+        'instead of adding a remembered offset: offsets change with the calendar, and the hour ' +
+        'either side of a changeover is where guesses go wrong. Give `time` with an offset for an ' +
+        'exact instant, or without one plus `from` for a wall-clock reading in a named zone.',
+      inputSchema: convertTimezoneInput,
+      outputSchema: convertTimezoneOutput,
+      annotations: {
+        title: 'Convert a time between timezones',
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true, // pure function of its inputs
+        openWorldHint: false,
+      },
+    },
+    async (args) => {
+      logger.debug('Tool call', { tool: CONVERT_TIMEZONE, args });
+      const result = service.convert(args);
       return {
         content: [{ type: 'text', text: result.formatted }],
         structuredContent: result,

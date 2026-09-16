@@ -7,6 +7,16 @@ export interface IDateTimeService {
 export interface DateTimeOptions {
   format?: string;
   provider?: string;
+  /** IANA zone for `local`, `offset`, `timezone` and token formats. Default: host zone. */
+  timezone?: string;
+}
+
+export interface ConvertOptions {
+  /** ISO 8601. With an offset it is an instant; without one, `from` says which zone it was read in. */
+  time: string;
+  from?: string;
+  to: string;
+  format?: string;
 }
 
 /**
@@ -21,18 +31,25 @@ export type DateTimeResult = {
   formatted: string;
   /** The instant as an ISO 8601 UTC string. Canonical machine value. */
   iso: string;
-  /** The UTC clock reading. Identical to `iso` until a timezone parameter exists. */
+  /** The UTC clock reading. Always equal to `iso`; kept so both roles are explicit. */
   utc: string;
-  /** The host-local clock reading as ISO 8601 with its real offset, e.g. ...+02:00. */
+  /** The clock reading in `timezone`, as ISO 8601 with its real offset, e.g. ...+02:00. */
   local: string;
-  /** Host UTC offset in extended form: "+02:00", "-05:30", "+00:00". */
+  /** UTC offset of `timezone` at this instant, extended form: "+02:00", "-05:30", "+00:00". */
   offset: string;
-  /** IANA zone the `local` and `offset` fields are stated in, e.g. "Europe/Berlin". */
+  /** IANA zone the `local` and `offset` fields are stated in. The requested zone, or the host's. */
   timezone: string;
   /** Milliseconds since the Unix epoch. */
   epochMs: number;
   /** Which provider actually answered -- may differ from the one requested on fallback. */
   provider: string;
+};
+
+export type ConvertResult = Omit<DateTimeResult, 'provider'> & {
+  /** Zone the input was interpreted in: its own offset, or `from`. */
+  from: string;
+  /** True when the instant is within an hour of a DST changeover in the target zone. */
+  dstTransition: boolean;
 };
 
 export const STANDARD_FORMAT_TOKENS = {

@@ -16,10 +16,9 @@ its timezone.
 
 ---
 
-## `get_current_datetime` (Phase 1 done, Phase 2 pending)
+## `get_current_datetime` (shipped, 2.0.0)
 
 Extends the existing tool. `format` and `provider` keep their v1.1.8 meaning.
-Phase 1 shipped the output shape below exactly as specified; `timezone` input is Phase 2.
 
 **Input**
 
@@ -56,7 +55,7 @@ clock than the caller asked for.
 
 ---
 
-## `convert_timezone` (Phase 2)
+## `convert_timezone` (shipped, 2.0.0)
 
 | param | type | required |
 |---|---|---|
@@ -64,9 +63,14 @@ clock than the caller asked for.
 | `from` | string (IANA) | no — inferred from `time`'s offset when present |
 | `to` | string (IANA) | yes |
 
-Returns the same structured shape as above, plus a `dstTransition` flag when the
-converted instant falls within a DST changeover window. The DST edge is the entire
-reason this tool is worth shipping — an LLM guessing offsets gets it wrong.
+Returns the same structured shape as above (minus `provider`), plus `from` (the zone
+the input was interpreted in) and `dstTransition` — true when the instant is within an
+hour of a DST changeover in the target zone. The DST edge is the entire reason this tool
+is worth shipping — an LLM guessing offsets gets it wrong.
+
+Also accepts an optional `format` for the text result. A wall-clock time in the
+spring-forward gap resolves to after the gap; an ambiguous autumn time resolves to its
+first occurrence; an offset-less `time` with no `from` is refused rather than guessed.
 
 ---
 

@@ -1,4 +1,14 @@
-import { IDateTimeService, DateTimeOptions, DateTimeResult } from '../types/DateTimeTypes';
+import { IDateTimeService, DateTimeOptions, DateTimeResult, ConvertOptions, ConvertResult } from '../types/DateTimeTypes';
+import {
+  hostTimeZone,
+  assertTimeZone,
+  parseIso,
+  isoWallClock,
+  wallClockToInstant,
+  isNearDstTransition,
+  formatOffset,
+  offsetMinutes,
+} from '../utils/TimeZone';
 import { ProviderFactory } from '../providers/ProviderFactory';
 import { DateFormatter } from '../utils/DateFormatter';
 import { Validator } from '../utils/Validator';
@@ -62,6 +72,8 @@ export class DateTimeService implements IDateTimeService {
 
       const format = validOptions.format || this.config?.defaultFormat || 'iso';
       const providerName = validOptions.provider || this.config?.defaultProvider || 'local';
+      const timezone = validOptions.timezone || hostTimeZone();
+      assertTimeZone(timezone);
 
       this.logger.debug('Processing datetime request', { 
         format, 
@@ -139,16 +151,10 @@ export class DateTimeService implements IDateTimeService {
       }
 
       // Format the datetime
-      const formattedDateTime = DateFormatter.format(currentDate, format);
-      const iso = currentDate.toISOString();
+      const formattedDateTime = DateFormatter.format(currentDate, format, timezone);
       const result: DateTimeResult = {
+        ...this.describe(currentDate, timezone),
         formatted: formattedDateTime,
-        iso,
-        utc: iso,
-        local: DateFormatter.format(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        offset: DateFormatter.utcOffset(currentDate),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        epochMs: currentDate.getTime(),
         provider: answeredBy,
       };
 
@@ -177,6 +183,54 @@ export class DateTimeService implements IDateTimeService {
         -1
       );
     }
+  }
+
+  /** One instant stated from UTC and from `timezone`. Shared by resolve() and convert(). */
+  private describe(date: Date, timezone: string): Omit<DateTimeResult, 'formatted' | 'provider'> {
+    const iso = date.toISOString();
+    return {
+      iso,
+      utc: iso,
+      local: DateFormatter.format(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ', timezone),
+      offset: formatOffset(offsetMinutes(date, timezone)),
+      timezone,
+      epochMs: date.getTime(),
+    };
+  }
+
+  /**
+   * Re-state a time in another zone. The interesting case is the one an LLM gets
+   * wrong: an offset-less time read in a zone whose offset depends on the date.
+   */
+  convert(options: ConvertOptions): ConvertResult {
+    const { time, to, format = 'YYYY-MM-DDTHH:mm:ss.SSSZ' } = options;
+    assertTimeZone(to);
+    if (options.from !== undefined) assertTimeZone(options.from);
+
+    const { date: parsed, hasOffset } = parseIso(time);
+    let instant: Date;
+    let from: string;
+
+    if (hasOffset) {
+      // The string already pins the instant; `from` is at most a label.
+      instant = parsed;
+      from = options.from ?? 'offset in input';
+    } else if (options.from) {
+      instant = wallClockToInstant(isoWallClock(time), options.from);
+      from = options.from;
+    } else {
+      throw new DateTimeError(
+        `'${time}' has no UTC offset, so it is ambiguous. Either append one (e.g. "+01:00" or "Z") or pass \`from\` naming the zone it was read in.`,
+        -1
+      );
+    }
+
+    return {
+      ...this.describe(instant, to),
+      formatted: DateFormatter.format(instant, format, to),
+      from,
+      dstTransition: isNearDstTransition(instant, to),
+    };
   }
 
   validateFormat(format: string): boolean {

@@ -1,7 +1,8 @@
 # v2 Roadmap
 
 **Branch:** `feat/v2-temporal-context` (branched from `v1.1.8`)
-**Status:** Phase 1 implemented on the branch, unmerged. Phases 2–6 not started.
+**Status:** Phases 1–2 shipped in 2.0.0. Phases 3–6 not started; see §3 for the
+recommendation to stop after Phase 6.
 
 > Keep this directory small. The previous `docs/` tree reached 1,284 lines describing a
 > tool whose irreducible logic is 22 lines, and its checkboxes claimed work that was
@@ -57,7 +58,7 @@ Smoke test in a real Cursor or Claude Desktop instance before publishing: the SD
 bump changes the handshake and no automated test exercises a real client. Then publish
 and observe downloads for a fortnight.
 
-### Phase 1 — Structured output *(implemented on branch; not merged, not published)*
+### Phase 1 — Structured output *(shipped, 2.0.0)*
 Retire the UTC-vs-local ambiguity instead of documenting around it.
 
 - Migrate to the SDK 1.x `McpServer` / `registerTool` API (the dependency upgrade
@@ -75,13 +76,12 @@ and old clients still receive a usable text string.
 `ToolRegistry` and `RequestHandler` are gone — the SDK's `registerTool` does their job.
 The integration suite now drives the real `McpServer` through a `Client` over
 `InMemoryTransport`, so protocol behaviour is tested rather than internal getters.
-**Before release:** the publish workflow runs `npm publish` with no `--tag`, so a
-`2.0.0-*` prerelease would land on `latest` and reach every `npx -y` user. Add a
-dist-tag step (or publish `2.0.0` outright) before bumping the version on this branch.
+The publish workflow now routes any prerelease version (`x.y.z-*`) to the `next`
+dist-tag, so `npx -y` keeps resolving to a stable release.
 
-### Phase 2 — Timezone support
-Table stakes, not differentiation, but v1 has none at all and `.strict()` currently
-hard-errors on a `timezone` argument.
+### Phase 2 — Timezone support *(shipped, 2.0.0)*
+Table stakes, not differentiation, but v1 had none at all and `.strict()` hard-errored
+on a `timezone` argument.
 
 - `timezone` parameter accepting IANA names, via `Intl.DateTimeFormat` — no new runtime
   dependency needed for formatting.
@@ -92,6 +92,12 @@ hard-errors on a `timezone` argument.
 
 **Done when:** the tool answers "what time is it in Tokyo" and converts across a DST
 boundary correctly.
+
+*Implementation notes:* `src/utils/TimeZone.ts`, built on `Intl.DateTimeFormat` --
+no date library. Offsets are derived by reading the zone's wall clock and diffing
+against the instant, so no ICU offset-formatting support is needed. Covered: half- and
+quarter-hour zones, the spring-forward gap, the autumn repeat, and the exact second of
+a changeover. The host zone goes through the same path as every other zone.
 
 ### Phase 3 — Ambient time context *(differentiator)*
 No competitor does this. Stop being a tool the model must remember to call.

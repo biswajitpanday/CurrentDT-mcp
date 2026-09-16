@@ -110,8 +110,12 @@ jobs:
         # Trusted Publisher configured on npmjs.com for this repo + workflow file.
         # npm attaches a provenance attestation automatically.
         run: |
-          echo "Publishing version ${{ steps.version-check.outputs.version }} to NPM..."
-          npm publish --access public
+          VERSION="${{ steps.version-check.outputs.version }}"
+          # A prerelease (2.1.0-alpha.1, ...) goes to the `next` dist-tag so that
+          # `npx -y @strix-ai/currentdt-mcp` keeps resolving to a stable release.
+          if [[ "$VERSION" == *-* ]]; then TAG=next; else TAG=latest; fi
+          echo "Publishing version $VERSION to NPM under dist-tag '$TAG'..."
+          npm publish --access public --tag "$TAG"
 
       - name: 🏷️ Create Git Tag
         if: steps.version-check.outputs.publish == 'true'

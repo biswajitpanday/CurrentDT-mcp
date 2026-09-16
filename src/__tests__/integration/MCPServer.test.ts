@@ -2,7 +2,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { MCPServer } from '../../server/MCPServer';
-import { GET_CURRENT_DATETIME } from '../../server/tools';
+import { GET_CURRENT_DATETIME, CONVERT_TIMEZONE } from '../../server/tools';
 
 /**
  * Drives the server through the real protocol: a Client on one end of an in-memory
@@ -56,14 +56,14 @@ describe('MCPServer over the MCP protocol', () => {
   });
 
   describe('tools/list', () => {
-    it('exposes exactly one tool with input schema, output schema and annotations', async () => {
+    it('exposes both tools with input schema, output schema and annotations', async () => {
       const { tools } = await client.listTools();
-      expect(tools).toHaveLength(1);
+      expect(tools.map((t) => t.name).sort()).toEqual([CONVERT_TIMEZONE, GET_CURRENT_DATETIME]);
 
-      const [tool] = tools;
-      expect(tool.name).toBe(GET_CURRENT_DATETIME);
+      const tool = tools.find((t) => t.name === GET_CURRENT_DATETIME)!;
       expect(tool.inputSchema.properties).toHaveProperty('format');
       expect(tool.inputSchema.properties).toHaveProperty('provider');
+      expect(tool.inputSchema.properties).toHaveProperty('timezone');
       expect(tool.outputSchema?.properties).toHaveProperty('iso');
       expect(tool.outputSchema?.properties).toHaveProperty('local');
       expect(tool.outputSchema?.properties).toHaveProperty('timezone');
@@ -73,7 +73,8 @@ describe('MCPServer over the MCP protocol', () => {
 
     it('does not declare a default for format -- the default is configuration-driven', async () => {
       const { tools } = await client.listTools();
-      const format = tools[0].inputSchema.properties?.format as Record<string, unknown>;
+      const tool = tools.find((t) => t.name === GET_CURRENT_DATETIME)!;
+      const format = tool.inputSchema.properties?.format as Record<string, unknown>;
       expect(format).not.toHaveProperty('default');
     });
   });
@@ -109,8 +110,25 @@ describe('MCPServer over the MCP protocol', () => {
 
     it('ignores unknown arguments instead of failing the call', async () => {
       // v1's schema was .strict(); a client that sent an extra key got a hard error.
-      const result = await call({ timezone: 'Asia/Tokyo' });
+      const result = await call({ somethingElse: true });
       expect(result.isError).toBeFalsy();
+    });
+
+    it('renders local/offset/timezone in a requested zone while iso stays UTC', async () => {
+      const result = await call({ timezone: 'Asia/Kolkata', format: 'HH:mm Z' });
+      const sc = result.structuredContent as Record<string, unknown>;
+      expect(sc.timezone).toBe('Asia/Kolkata');
+      expect(sc.offset).toBe('+05:30');
+      expect(sc.local).toMatch(/\+05:30$/);
+      expect(sc.iso).toMatch(/Z$/);
+      expect(textOf(result)).toMatch(/^\d{2}:\d{2} \+05:30$/);
+      expect(new Date(sc.local as string).getTime()).toBe(sc.epochMs);
+    });
+
+    it('rejects an unknown timezone with a readable tool error', async () => {
+      const result = await call({ timezone: 'Mars/Olympus_Mons' });
+      expect(result.isError).toBe(true);
+      expect(textOf(result)).toMatch(/Unknown timezone 'Mars\/Olympus_Mons'/);
     });
 
     it('rejects a token-less format as a tool error, never echoes it', async () => {
@@ -132,6 +150,48 @@ describe('MCPServer over the MCP protocol', () => {
       const result = await call({ provider: 'nonexistent' });
       expect(result.isError).toBe(true);
       expect(textOf(result)).toMatch(/'local' \| 'remote'/);
+    });
+  });
+
+  describe('convert_timezone', () => {
+    const convert = (args: Record<string, unknown>) =>
+      client.callTool({ name: CONVERT_TIMEZONE, arguments: args }) as Promise<CallToolResult>;
+
+    it('converts an instant and reports the target offset', async () => {
+      const result = await convert({ time: '2026-07-15T12:00:00Z', to: 'Asia/Tokyo' });
+      expect(result.isError).toBeFalsy();
+      const sc = result.structuredContent as Record<string, unknown>;
+      expect(sc.local).toBe('2026-07-15T21:00:00.000+09:00');
+      expect(sc.offset).toBe('+09:00');
+      expect(sc.timezone).toBe('Asia/Tokyo');
+      expect(sc.from).toBe('offset in input');
+      expect(sc.dstTransition).toBe(false);
+    });
+
+    it('interprets an offset-less time in `from`, DST-correctly for that date', async () => {
+      // 09:00 New York in July is EDT (-04:00) -> 13:00Z -> 15:00 Berlin (+02:00).
+      const july = await convert({ time: '2026-07-15T09:00:00', from: 'America/New_York', to: 'Europe/Berlin' });
+      expect((july.structuredContent as any).local).toBe('2026-07-15T15:00:00.000+02:00');
+      // Same wall clock in January is EST (-05:00) -> 14:00Z -> 15:00 Berlin (+01:00).
+      const jan = await convert({ time: '2026-01-15T09:00:00', from: 'America/New_York', to: 'Europe/Berlin' });
+      expect((jan.structuredContent as any).local).toBe('2026-01-15T15:00:00.000+01:00');
+    });
+
+    it('flags instants within an hour of a DST change in the target zone', async () => {
+      const result = await convert({ time: '2026-03-29T00:30:00Z', to: 'Europe/Berlin' });
+      expect((result.structuredContent as any).dstTransition).toBe(true);
+    });
+
+    it('refuses an offset-less time with no `from` rather than guessing', async () => {
+      const result = await convert({ time: '2026-07-15T09:00:00', to: 'Europe/Berlin' });
+      expect(result.isError).toBe(true);
+      expect(textOf(result)).toMatch(/ambiguous/);
+    });
+
+    it('rejects an unknown target zone', async () => {
+      const result = await convert({ time: '2026-07-15T09:00:00Z', to: 'Nowhere/Land' });
+      expect(result.isError).toBe(true);
+      expect(textOf(result)).toMatch(/Unknown timezone/);
     });
   });
 });

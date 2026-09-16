@@ -6,6 +6,7 @@ import { z } from 'zod';
 export const DateTimeOptionsSchema = z.object({
   format: z.string().optional(),
   provider: z.string().optional(),
+  timezone: z.string().optional(),
 }).strict();
 
 export interface MCPError extends Error {
