@@ -13,7 +13,7 @@
  *
  * Usage:
  *   SMITHERY_API_KEY=... node scripts/publish-smithery.js [namespace/server]
- *   (mint a key with `smithery auth token`; default target is biswajitmailid/currentdt-mcp)
+ *   (key from https://smithery.ai/account/api-keys; default target is biswajitmailid/currentdt-mcp)
  */
 const fs = require('fs');
 const path = require('path');
@@ -26,7 +26,7 @@ const target = process.argv[2] || 'biswajitmailid/currentdt-mcp';
 
 const apiKey = process.env.SMITHERY_API_KEY;
 if (!apiKey) {
-  console.error('SMITHERY_API_KEY is not set. Mint one with `smithery auth token`.');
+  console.error('SMITHERY_API_KEY is not set. Create one at https://smithery.ai/account/api-keys.');
   process.exit(2);
 }
 for (const f of [bundlePath, cardPath]) {
@@ -48,6 +48,19 @@ const headers = { Authorization: `Bearer ${apiKey}` };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
+  // A release can only be attached to an existing server record. This call is
+  // idempotent -- it succeeds if the server already exists and the caller owns it.
+  const created = await fetch(`${API}/servers/${qualified}`, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ displayName: serverCard.serverInfo.title, description: serverCard.serverInfo.description }),
+  });
+  if (!created.ok) {
+    console.error(`Could not create/confirm server ${target}: ${created.status} ${await created.text()}`);
+    process.exit(1);
+  }
+  console.log(`Server ${target} ${created.status === 201 ? 'created' : 'confirmed'}.`);
+
   console.log(`Publishing ${target} ${serverCard.serverInfo.version} (stdio, ${(fs.statSync(bundlePath).size / 1024).toFixed(0)} kB)...`);
   const res = await fetch(`${API}/servers/${qualified}/releases`, { method: 'PUT', headers, body: form });
   const text = await res.text();

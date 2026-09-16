@@ -47,7 +47,7 @@ never published, and it derives the manifest's tool list and a separate
 `server-card.json` from the server's own tools/list.
 
 Smithery is published by hand per release: `SMITHERY_API_KEY=... npm run
-publish:smithery` (key from `smithery auth token`). Not the Smithery CLI: it copies
+publish:smithery` (root key from smithery.ai/account/api-keys). Not the Smithery CLI: it copies
 `manifest.tools` into a server card that requires `inputSchema`, which the MCPB
 manifest schema forbids, so it rejects every spec-valid bundle. The script sends the
 generated server card through Smithery's API alongside the unmodified bundle.
