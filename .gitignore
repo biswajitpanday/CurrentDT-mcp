@@ -121,3 +121,4 @@ blogs/
 # MCPB bundle build output (scripts/build-mcpb.js)
 mcpb-build/
 *.mcpb
+server-card.json

@@ -18,28 +18,33 @@
   "documentation": "https://github.com/biswajitpanday/CurrentDT-mcp#readme",
   "support": "https://github.com/biswajitpanday/CurrentDT-mcp/issues",
   "license": "MIT",
-  "keywords": ["time", "date", "datetime", "timezone", "clock", "utc", "dst", "iso8601"],
+  "keywords": [
+    "time",
+    "date",
+    "datetime",
+    "timezone",
+    "clock",
+    "utc",
+    "dst",
+    "iso8601"
+  ],
   "server": {
     "type": "node",
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/dist/index.js"]
+      "args": [
+        "${__dirname}/dist/index.js"
+      ]
     }
   },
-  "tools": [
-    {
-      "name": "get_current_datetime",
-      "description": "The current date and time as UTC, local with offset, IANA zone and epoch, in any timezone."
-    },
-    {
-      "name": "convert_timezone",
-      "description": "Convert a time between IANA timezones, DST-correct for the date, flagging changeover hours."
-    }
-  ],
   "compatibility": {
     "claude_desktop": ">=0.10.0",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
     "runtimes": {
       "node": ">=18.0.0"
     }

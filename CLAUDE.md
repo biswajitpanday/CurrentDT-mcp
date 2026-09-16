@@ -41,10 +41,16 @@ registry reads it from the published npm tarball to prove ownership.
 
 The workflow also builds `currentdt-mcp.mcpb` (`npm run build:mcpb`, `manifest.json`
 + `scripts/build-mcpb.js`) and attaches it to the GitHub release: one-click install for
-Claude Desktop, and the artifact Smithery distributes for local servers (Smithery no
-longer reads `smithery.yaml`; its listing is a manual upload of this bundle). The build
+Claude Desktop, and the artifact Smithery distributes for local servers. The build
 script launches the staged server before packing, so a bundle that cannot start is
-never published.
+never published, and it derives the manifest's tool list and a separate
+`server-card.json` from the server's own tools/list.
+
+Smithery is published by hand per release: `SMITHERY_API_KEY=... npm run
+publish:smithery` (key from `smithery auth token`). Not the Smithery CLI: it copies
+`manifest.tools` into a server card that requires `inputSchema`, which the MCPB
+manifest schema forbids, so it rejects every spec-valid bundle. The script sends the
+generated server card through Smithery's API alongside the unmodified bundle.
 
 ## Layout
 

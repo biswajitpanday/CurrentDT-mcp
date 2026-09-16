@@ -1,6 +1,6 @@
 {
   "name": "@strix-ai/currentdt-mcp",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Current DateTime MCP Server - Provide real-time date and time to AI assistants via Model Context Protocol",
   "author": {
     "name": "Biswajit Panday",
@@ -69,7 +69,8 @@
     "version:minor": "npm version minor",
     "version:major": "npm version major",
     "test:mcp-integration": "node examples/test-mcp-integration.js",
-    "build:mcpb": "node scripts/build-mcpb.js"
+    "build:mcpb": "node scripts/build-mcpb.js",
+    "publish:smithery": "node scripts/publish-smithery.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
